@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>実験計画法</title>
+<meta name="description" content="直交表（L4〜L18）への割り付け、実験順序表、分散分析、タグチメソッドの SN比と 2 段階設計、最適条件の推定と確認実験までをブラウザだけで計算する">
+<link rel="canonical" href="https://kotaooka.github.io/doe-calc/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="QC Workbench">
+<meta property="og:title" content="実験計画法｜直交表・タグチメソッド">
+<meta property="og:description" content="直交表（L4〜L18）への割り付け、実験順序表、分散分析、タグチメソッドの SN比と 2 段階設計、最適条件の推定と確認実験までをブラウザだけで計算する">
+<meta property="og:url" content="https://kotaooka.github.io/doe-calc/">
+<meta property="og:image" content="https://kotaooka.github.io/doe-calc/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="実験計画法：直交表の割り付け、分散分析、SN比、要因効果図">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#1d5c96" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#11161b" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="実験計画法">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<script>
+  // 保存したテーマ（auto / light / dark）を描画前に当てる。キーは QC Workbench の全ツールで共通
+  try { const t = localStorage.getItem("qc-workbench-theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; } catch (e) { /* 保存できない環境 */ }
+</script>
+<style>
+/* 色・字体は QC Workbench のほかのツール（cpk-calc・logit-calc など）と共通 */
+:root {
+  --bg: #eef1f4; --surface: #ffffff; --ink: #15212c; --ink2: #475563; --muted: #74818e; --line: #d5dce3;
+  --accent: #1d5c96; --accent-ink: #ffffff; --accent-weak: #e1ebf5;
+  --ok: #17703a; --ok-weak: #e2f2e7; --good: #3f7d1e; --good-weak: #edf5df; --ng: #ad2a22; --ng-weak: #f8e4e2; --warn: #8a5300; --warn-weak: #f8ecd9;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #8c5bd6; --grid: #e4e9ee;
+  --f-ui: "BIZ UDPGothic", "Hiragino Sans", "Yu Gothic UI", "Meiryo", system-ui, sans-serif;
+  --f-num: "IBM Plex Mono", ui-monospace, "Consolas", monospace;
+  --r: 6px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11161b; --surface: #19212a; --ink: #e6ecf2; --ink2: #a9b5c1; --muted: #7d8996; --line: #2b3641;
+    --accent: #6ba6df; --accent-ink: #0d1620; --accent-weak: #1c2f43;
+    --ok: #57c483; --ok-weak: #163222; --good: #9ccc65; --good-weak: #23301a; --ng: #f07a70; --ng-weak: #3a1c1a; --warn: #e3a84e; --warn-weak: #36280f;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #a07ae0; --grid: #253039;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11161b; --surface: #19212a; --ink: #e6ecf2; --ink2: #a9b5c1; --muted: #7d8996; --line: #2b3641;
+  --accent: #6ba6df; --accent-ink: #0d1620; --accent-weak: #1c2f43;
+  --ok: #57c483; --ok-weak: #163222; --good: #9ccc65; --good-weak: #23301a; --ng: #f07a70; --ng-weak: #3a1c1a; --warn: #e3a84e; --warn-weak: #36280f;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #a07ae0; --grid: #253039;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-ui); font-size: 15px; line-height: 1.6; -webkit-text-size-adjust: 100%; }
+.num, .mono, input[type="number"], input.num { font-family: var(--f-num); font-variant-numeric: tabular-nums; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 16px; padding-block: 0 56px; }
+
+header.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); }
+.top-in { max-width: 1120px; margin: 0 auto; padding-inline: 16px; padding-block: 12px 0; }
+.brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.brand h1 { font-size: 1.15rem; margin: 0; letter-spacing: .02em; }
+.brand .std { font-size: .78rem; color: var(--muted); }
+/* QC Workbench へ戻るリンク（パンくず） */
+.brand .home { font-size: .78rem; color: var(--muted); text-decoration: none; margin-right: -6px; }
+.brand .home:hover { color: var(--accent); text-decoration: underline; }
+.brand .crumb { font-size: .78rem; color: var(--muted); margin-right: -6px; }
+.brand .theme { margin-left: auto; }
+nav.tabs { display: flex; gap: 4px; margin-top: 10px; overflow-x: auto; scrollbar-width: none; }
+nav.tabs::-webkit-scrollbar { display: none; }
+nav.tabs button { flex: 0 0 auto; border: 0; background: none; color: var(--ink2); font: inherit; font-size: .92rem; padding: 8px 12px 10px; cursor: pointer; border-bottom: 3px solid transparent; }
+nav.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); font-weight: 700; }
+nav.tabs button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+.box { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; min-width: 0; margin-top: 16px; }
+.box > h2 { font-size: 1rem; margin: 0 0 12px; display: flex; align-items: center; gap: 8px; }
+.box > h2 .step { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); font-size: .78rem; }
+.hint { font-size: .78rem; color: var(--muted); }
+.lbl { font-size: .8rem; color: var(--ink2); letter-spacing: .03em; }
+.row { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; }
+.field { display: flex; flex-direction: column; gap: 4px; }
+input[type="number"], input[type="text"], select {
+  font-size: .95rem; padding: 7px 9px; border-radius: var(--r); border: 1px solid var(--line); background: var(--bg); color: var(--ink); min-width: 0;
+}
+input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+label.chk { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: .9rem; }
+label.chk input { width: 16px; height: 16px; accent-color: var(--accent); }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.seg button { border: 0; background: var(--bg); color: var(--ink2); font: inherit; font-size: .88rem; padding: 7px 12px; cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); font-weight: 700; }
+.btn { border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; font-size: .9rem; padding: 7px 14px; border-radius: var(--r); cursor: pointer; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 700; padding: 9px 22px; }
+.btn.small { font-size: .8rem; padding: 4px 10px; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+
+.drop { border: 2px dashed var(--line); border-radius: var(--r); padding: 18px; text-align: center; color: var(--ink2); }
+.drop.over { border-color: var(--accent); background: var(--accent-weak); }
+.drop strong { color: var(--ink); }
+.privacy { font-size: .8rem; color: var(--ok); margin-top: 8px; }
+.filebar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 10px; font-size: .9rem; }
+
+.tbl-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--r); margin-top: 10px; }
+table { border-collapse: collapse; font-size: .85rem; min-width: 100%; }
+th, td { padding: 6px 10px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+th { background: var(--bg); color: var(--ink2); font-weight: 700; position: sticky; top: 0; }
+td.l, th.l { text-align: left; }
+tbody tr:last-child td { border-bottom: 0; }
+td.lab { color: var(--muted); text-align: left; }
+td input { width: 9em; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips label { display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--line); border-radius: 999px; padding: 3px 11px 3px 8px; font-size: .88rem; cursor: pointer; background: var(--bg); }
+.chips label:has(input:checked) { border-color: var(--accent); background: var(--accent-weak); color: var(--ink); }
+.chips input { accent-color: var(--accent); }
+
+.lv { font-weight: 700; border-radius: 4px; padding: 2px 6px; }
+.lv.ex { background: var(--ok-weak); color: var(--ok); }
+.lv.gd { background: var(--good-weak); color: var(--good); }
+.lv.wa { background: var(--warn-weak); color: var(--warn); }
+.lv.ng { background: var(--ng-weak); color: var(--ng); }
+.legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; font-size: .78rem; }
+
+.log { margin: 10px 0 0; padding: 0; list-style: none; font-size: .85rem; }
+.log li { padding: 4px 0 4px 22px; position: relative; border-bottom: 1px dashed var(--line); }
+.log li::before { position: absolute; left: 2px; font-weight: 700; }
+.log li.warn { color: var(--warn); } .log li.warn::before { content: "!"; }
+.log li.err { color: var(--ng); } .log li.err::before { content: "×"; }
+.log li.info { color: var(--ink2); } .log li.info::before { content: "i"; }
+
+.target { border-top: 1px solid var(--line); margin-top: 18px; padding-top: 14px; }
+.target h3 { margin: 0 0 8px; font-size: 1rem; }
+dl.kv { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px 16px; margin: 0 0 10px; }
+dl.kv dt { font-size: .72rem; color: var(--muted); }
+dl.kv dd { margin: 0; font-size: .98rem; }
+dl.kv dd small { color: var(--ink2); font-size: .74rem; }
+.charts { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 460px), 1fr)); gap: 12px; }
+.chart { border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; position: relative; }
+.chart svg { display: block; width: 100%; height: auto; }
+.chart .save { position: absolute; right: 6px; bottom: 6px; opacity: .0; transition: opacity .15s; }
+.chart:hover .save, .chart:focus-within .save { opacity: 1; }
+@media (hover: none) { .chart .save { opacity: .9; } }
+
+.res-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.res { border: 1px solid var(--line); border-radius: var(--r); padding: 12px; }
+.res h3 { margin: 0 0 6px; font-size: .95rem; }
+.verdict { font-weight: 700; font-size: 1.05rem; }
+.verdict.sig { color: var(--ng); } .verdict.nsig { color: var(--ok); }
+
+.explain { line-height: 1.8; }
+.explain h1 { font-size: 1.2rem; margin: 0 0 8px; }
+.explain h2 { font-size: 1.08rem; margin: 28px 0 8px; padding-bottom: 4px; border-bottom: 2px solid var(--accent-weak); }
+.explain h3 { font-size: .98rem; margin: 18px 0 6px; }
+.explain h4 { font-size: .92rem; margin: 14px 0 4px; }
+.explain pre { background: var(--bg); border: 1px solid var(--line); border-radius: var(--r); padding: 8px 12px; overflow-x: auto; font-size: .85rem; }
+.explain code { font-family: var(--f-num); }
+.explain table { min-width: 0; margin: 8px 0; }
+.explain hr { border: 0; border-top: 1px solid var(--line); margin: 24px 0; }
+.toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--ink); color: var(--surface); padding: 8px 16px; border-radius: 999px; font-size: .88rem; z-index: 20; }
+.paste-hint { margin-top: 10px; font-size: .85rem; }
+.src-seg { margin-bottom: 12px; }
+.grid-tools { margin-bottom: 6px; }
+.btn.danger { color: var(--ng); }
+.saved { color: var(--ok); }
+.grid-wrap { overflow: auto; max-height: 520px; border: 1px solid var(--line); border-radius: var(--r); margin-top: 8px; }
+table.grid { border-collapse: separate; border-spacing: 0; min-width: 0; font-size: .9rem; }
+table.grid th, table.grid td { padding: 0; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); }
+table.grid thead th { position: sticky; top: 0; z-index: 2; background: var(--bg); padding: 4px; vertical-align: top; }
+table.grid td.rn, table.grid th.rn { position: sticky; left: 0; z-index: 1; background: var(--bg); color: var(--muted); text-align: right; padding: 0 8px; font-family: var(--f-num); font-size: .8rem; min-width: 3em; }
+table.grid thead th.rn { z-index: 3; }
+table.grid td input { width: 7.5em; border: 0; border-radius: 0; background: var(--surface); padding: 6px 8px; font-family: var(--f-num); text-align: right; }
+table.grid td input.txt { text-align: left; font-family: var(--f-ui); }
+table.grid td input:focus { outline: 2px solid var(--accent); outline-offset: -2px; background: var(--accent-weak); }
+table.grid td input.bad { color: var(--ng); background: var(--ng-weak); }
+table.grid th .gh { display: flex; flex-direction: column; gap: 3px; }
+table.grid th .gh input { width: 7.5em; font-weight: 700; padding: 4px 6px; }
+table.grid th .gh .gsub { display: flex; gap: 4px; align-items: center; }
+table.grid th .gh select { font-size: .75rem; padding: 2px 4px; }
+table.grid th .gh .gdel { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: .9rem; padding: 0 4px; }
+table.grid th .gh .gstat { font-size: .7rem; color: var(--muted); font-weight: 400; font-family: var(--f-num); }
+table.spec td.draw input { width: 15em; font-family: var(--f-num); }
+table.spec td.draw input.bad { border-color: var(--ng); }
+table.spec td.draw .msg { display: block; font-size: .72rem; color: var(--ng); white-space: normal; text-align: left; }
+details.planner summary { cursor: pointer; list-style: none; }
+details.planner summary::-webkit-details-marker { display: none; }
+details.planner summary::before { content: "▸ "; color: var(--muted); }
+details.planner[open] summary::before { content: "▾ "; }
+.plan-out { margin: 10px 0; font-size: .95rem; }
+.plan-out .big { font-size: 1.5rem; font-weight: 700; font-family: var(--f-num); }
+.plan-out table { min-width: 0; margin-top: 6px; }
+.needn { margin-top: 4px; font-size: .85rem; color: var(--ink2); }
+.paste-hint .btn { margin-left: 6px; }
+.print-head { display: none; }
+.rulehits { margin: 4px 0 10px; padding: 0; list-style: none; font-size: .82rem; color: var(--warn); }
+select:disabled { opacity: .5; }
+@media print {
+  @page { size: A4; margin: 12mm; }
+  :root { --bg: #fff !important; }
+  body { background: #fff; font-size: 11px; }
+  header.top, footer, .no-print, .chart .save, .toast { display: none !important; }
+  .wrap { max-width: none; padding: 0; }
+  .box { border: 0; padding: 0; margin: 0; }
+  .box > h2 { font-size: 14px; }
+  .print-head { display: block; margin-bottom: 8px; font-size: 11px; color: #333; }
+  .print-head h1 { font-size: 16px; margin: 0 0 4px; }
+  .tbl-wrap { overflow: visible; border-color: #999; }
+  .tbl-wrap table { font-size: 9px; min-width: 0; width: 100%; }
+  th, td { position: static; padding: 3px 4px; white-space: normal; }
+  .charts { grid-template-columns: 1fr 1fr; gap: 6px; }
+  .chart { break-inside: avoid; }
+  dl.kv { grid-template-columns: repeat(4, 1fr); }
+  .log li { padding-block: 1px; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+footer { margin-top: 32px; font-size: .78rem; color: var(--muted); }
+footer a { color: inherit; }
+/* ---- ここから実験計画法の画面 ---- */
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
+.tools .spacer { flex: 1; }
+.file-btn { position: relative; overflow: hidden; display: inline-block; }
+.file-btn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.form { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); gap: 12px 16px; align-items: end; }
+.form .field input, .form .field select { width: 100%; }
+.form .field.wide { grid-column: span 2; }
+@media (max-width: 480px) { .form .field.wide { grid-column: auto; } }
+.sub { margin-top: 14px; }
+.sub .row { gap: 8px 12px; }
+.outer-names { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.outer-names input { width: auto; max-width: 100%; }
+table.fac td { vertical-align: middle; padding: 4px 6px; }
+table.fac td input[type="text"] { width: 7em; padding: 5px 7px; font-size: .88rem; }
+table.fac td input.nm { width: 8.5em; font-weight: 700; }
+table.fac td input.un { width: 4.5em; }
+table.fac td input.lv { width: 6em; font-family: var(--f-num); }
+table.fac td select { font-size: .85rem; padding: 4px 6px; }
+table.fac td.ps { color: var(--warn); font-size: .8rem; text-align: left; white-space: normal; min-width: 8em; }
+.del { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 1rem; padding: 2px 6px; }
+.del:hover { color: var(--ng); }
+.inter-list { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.inter-list .it { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.inter-list select { font-size: .88rem; padding: 4px 6px; }
+td.use-f { color: var(--ink); font-weight: 700; text-align: left; }
+td.use-i { color: var(--accent); font-weight: 700; text-align: left; }
+td.use-e { color: var(--muted); text-align: left; }
+td.alias { color: var(--warn); text-align: left; white-space: normal; }
+td.alias.none { color: var(--muted); }
+td.lvl { text-align: left; }
+table.order td.l { text-align: left; }
+table.order td.run { font-family: var(--f-num); font-weight: 700; }
+h3.sec { font-size: .95rem; margin: 22px 0 6px; }
+h3.sec:first-child { margin-top: 0; }
+.metric-bar { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; margin-bottom: 12px; }
+.metric-bar .field { flex-direction: row; align-items: center; gap: 6px; }
+.metric-bar input[type="number"] { width: 5.5em; }
+table.anova td.pl { text-align: center; }
+table.anova tr.pooled td { color: var(--muted); }
+table.anova tr.err td { background: var(--bg); }
+table.anova tr.tot td { font-weight: 700; }
+table.anova tr.sub td { color: var(--muted); font-size: .8rem; }
+td.sig { color: var(--accent); font-weight: 700; }
+.empty { color: var(--muted); font-size: .9rem; padding: 12px 0; }
+.err-msg { color: var(--ng); font-weight: 700; }
+.kind { font-weight: 700; border-radius: 4px; padding: 2px 6px; font-size: .8rem; }
+.kind.sn { background: var(--ok-weak); color: var(--ok); }
+.kind.adjust { background: var(--accent-weak); color: var(--accent); }
+.kind.both { background: var(--warn-weak); color: var(--warn); }
+.kind.none { color: var(--muted); }
+table.cond td select { font-size: .85rem; padding: 4px 6px; max-width: 12em; }
+table.est td.best { font-weight: 700; }
+.conf-in { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 12px; }
+.conf-in .card input { width: 6.5em; margin: 2px 4px 2px 0; }
+.card { border: 1px solid var(--line); border-radius: var(--r); padding: 12px 14px; }
+.card h4 { margin: 0 0 6px; font-size: .92rem; }
+.verdict-ok { color: var(--ok); font-weight: 700; }
+.verdict-ng { color: var(--ng); font-weight: 700; }
+.verdict-na { color: var(--muted); }
+table.grid th.cl { padding: 6px 8px; font-size: .82rem; }
+table.grid td.rn { white-space: nowrap; text-align: left !important; }
+table.grid td.rn .lvs { color: var(--muted); font-size: .72rem; margin-left: 6px; letter-spacing: .04em; }
+.banner { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; padding: 12px 16px; border-radius: var(--r); border: 1px solid var(--line); margin-bottom: 14px; background: var(--bg); }
+.banner .big { font-size: 1.1rem; font-weight: 700; }
+.banner .sub2 { font-size: .85rem; color: var(--ink2); }
+.chart.wide { grid-column: 1 / -1; }
+.chart.wide svg { max-width: 900px; margin: 0 auto; }
+/* 狭い画面では要因効果図を縮めすぎず、横に動かして見る */
+@media (max-width: 640px) { .chart.wide { overflow-x: auto; } .chart.wide svg { min-width: 620px; } }
+.print-only { display: none; }
+@media print {
+  #dataSec, .tools, .no-print, .metric-bar .seg-wrap { display: none !important; }
+  .print-only { display: block; }
+  section[data-panel] { display: block !important; }
+  section[data-panel="plan"], section[data-panel="explain"] { display: none !important; }
+  body.print-order section[data-panel="plan"] { display: block !important; }
+  body.print-order section[data-panel="analysis"], body.print-order #setSec, body.print-order #facSec, body.print-order .print-head { display: none !important; }
+  body.print-order #orderSec .hint { display: none; }
+  table.fac input, table.fac select { border: 0; background: none; padding: 0; }
+  .banner { padding: 6px 10px; margin-bottom: 6px; }
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <a class="home" href="https://kotaooka.github.io/" title="QC Workbench（ツール一覧）へ戻る">QC Workbench</a><span class="crumb" aria-hidden="true">›</span><h1>実験計画法</h1>
+      <span class="std">直交表・タグチメソッド</span>
+      <button class="btn small theme" id="themeBtn" type="button" aria-label="表示テーマを切り替え">表示：自動</button>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" data-tab="plan" type="button">計画</button>
+      <button role="tab" aria-selected="false" data-tab="analysis" type="button">解析</button>
+      <button role="tab" aria-selected="false" data-tab="explain" type="button">解説</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="print-head"><h1 id="printTitle">実験計画法</h1><div id="printDate"></div></div>
+
+  <section data-panel="plan">
+    <div class="box" id="setSec">
+      <h2><span class="step">1</span>実験の設定</h2>
+      <div class="form">
+        <label class="field wide"><span class="lbl">実験の名前</span><input type="text" id="titleIn" placeholder="例：成形条件の最適化"></label>
+        <label class="field"><span class="lbl">特性値の名前</span><input type="text" id="charNameIn" placeholder="例：寸法"></label>
+        <label class="field"><span class="lbl">特性値の単位</span><input type="text" id="charUnitIn" placeholder="例：mm"></label>
+        <label class="field"><span class="lbl">特性の種類</span><select id="charSel">
+          <option value="smaller">望小特性（小さいほど良い）</option>
+          <option value="larger">望大特性（大きいほど良い）</option>
+          <option value="nominal1">望目特性タイプI（目標値に合わせる・正の値）</option>
+          <option value="nominal2">望目特性タイプII（目標値に合わせる・0 をまたぐ値）</option>
+        </select></label>
+        <label class="field"><span class="lbl">直交表</span><select id="arraySel"></select></label>
+      </div>
+      <p class="hint" id="charHint"></p>
+      <div class="sub">
+        <div class="row">
+          <span class="lbl">1 つの実験で取るデータ</span>
+          <div class="seg" id="outerSeg"><button type="button" data-v="repeat">繰り返し</button><button type="button" data-v="noise">誤差因子の調合</button></div>
+          <label class="field" style="flex-direction:row;align-items:center;gap:6px"><span class="lbl">データ数</span><input type="number" id="kIn" min="1" max="10" step="1" style="width:5em"></label>
+        </div>
+        <p class="hint" id="outerHint"></p>
+        <div class="outer-names" id="outerNames"></div>
+      </div>
+    </div>
+
+    <div class="box" id="facSec">
+      <h2><span class="step">2</span>因子と割り付け</h2>
+      <p class="hint">水準の欄には実際の値を入れます（例：180、200、220）。列は「自動」にすると、交互作用の列と重ならないように割り付けます。</p>
+      <div class="tbl-wrap"><table class="fac"><thead><tr><th class="l">因子</th><th class="l">単位</th><th class="l">水準数</th><th class="l">水準1</th><th class="l">水準2</th><th class="l">水準3</th><th class="l">列</th><th class="l">擬水準</th><th></th></tr></thead><tbody id="facBody"></tbody></table></div>
+      <div class="tools"><button class="btn" type="button" id="addFac">因子を追加</button></div>
+      <h3 class="sec">交互作用</h3>
+      <div class="inter-list" id="interList"></div>
+      <div class="tools"><button class="btn" type="button" id="addInter">交互作用を追加</button></div>
+      <h3 class="sec">割り付けの結果</h3>
+      <ul class="log" id="asgLog"></ul>
+      <div class="tbl-wrap"><table class="cols"><thead><tr><th>列</th><th>水準数</th><th class="l">割り付け</th><th class="l">この列に現れる、割り付けていない交互作用</th></tr></thead><tbody id="colBody"></tbody></table></div>
+    </div>
+
+    <div class="box" id="orderSec">
+      <h2><span class="step">3</span>実験順序表</h2>
+      <p class="hint" id="orderHint"></p>
+      <div class="tools no-print">
+        <button class="btn" type="button" id="shuffleBtn">順番を並べ替え直す</button>
+        <button class="btn" type="button" id="orderCsv">CSV で保存</button>
+        <button class="btn" type="button" id="orderPrint">順序表を印刷</button>
+      </div>
+      <div class="tbl-wrap" id="orderTbl"></div>
+    </div>
+  </section>
+
+  <section data-panel="analysis" hidden>
+    <div class="box" id="dataSec">
+      <h2><span class="step">4</span>データ</h2>
+      <p class="hint">実験 No. の順（直交表の行の順）に入れます。Excel の表をコピーして、表の左上のセルに貼り付けられます。空欄があると解析できません。</p>
+      <div class="tools">
+        <button class="btn" type="button" id="sampleTaguchi">サンプル：L18・望目</button>
+        <button class="btn" type="button" id="sampleInter">サンプル：L8・交互作用</button>
+        <button class="btn" type="button" id="saveJson">保存（JSON）</button>
+        <span class="file-btn btn">読み込み（JSON）<input type="file" id="loadJson" accept=".json,application/json"></span>
+        <button class="btn danger" type="button" id="clearData">データをクリア</button>
+        <span class="spacer"></span><span class="saved hint" id="saved"></span>
+      </div>
+      <div class="grid-wrap" id="grid"></div>
+      <p class="privacy">データはこの端末の中だけで計算し、外部に送信しません。入力は自動でこの端末に保存します。</p>
+    </div>
+
+    <div class="box" id="out"></div>
+  </section>
+
+  <section data-panel="explain" hidden>
+    <div class="box explain">
+<!--EXPLAIN-START-->
+<h1>実験計画法の解説</h1>
+<p>因子（条件）を<strong>直交表</strong>に割り付けて少ない実験回数で効果を調べ、<strong>分散分析</strong>で効いている因子を見分け、最も良い条件とその効果（利得）を推定します。タグチメソッド（品質工学）の <strong>SN比</strong>と<strong>2 段階設計</strong>にも対応しています。</p>
+<h2>使い方の流れ</h2>
+<ol>
+<li><strong>計画</strong>タブで、特性値・特性の種類・直交表・1 つの実験で取るデータ（繰り返しか誤差因子の調合か）を決めます</li>
+<li>因子と水準の実際の値を入れ、調べたい交互作用を指定します。列は自動で割り付けます</li>
+<li><strong>実験順序表</strong>の順番で実験します（CSV で保存・印刷できます）</li>
+<li><strong>解析</strong>タブにデータを入れると、分散分析・要因効果図・推定を表示します</li>
+<li>最適条件と現行条件で<strong>確認実験</strong>を行い、利得が再現するかを確かめます</li>
+</ol>
+<h2>直交表</h2>
+<p>どの 2 列を取り出しても、水準の組み合わせが同じ回数ずつ現れる表です。このため、ある因子の効果を調べるとき、ほかの因子の影響が水準ごとに均等に入り、打ち消し合います。</p>
+<table>
+<thead>
+<tr>
+<th>表</th>
+<th>実験数</th>
+<th>列</th>
+<th>使いどころ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L4</td>
+<td>4</td>
+<td>2 水準 × 3</td>
+<td>2〜3 因子の予備的な実験</td>
+</tr>
+<tr>
+<td>L8</td>
+<td>8</td>
+<td>2 水準 × 7</td>
+<td>2 水準の因子と、少数の交互作用</td>
+</tr>
+<tr>
+<td>L9</td>
+<td>9</td>
+<td>3 水準 × 4</td>
+<td>3 水準の因子を 4 つまで（交互作用を調べるなら 2 因子とその交互作用）</td>
+</tr>
+<tr>
+<td>L12</td>
+<td>12</td>
+<td>2 水準 × 11</td>
+<td>多くの因子のふるい分け。交互作用は割り付けられない</td>
+</tr>
+<tr>
+<td>L16</td>
+<td>16</td>
+<td>2 水準 × 15</td>
+<td>2 水準の因子と、多めの交互作用</td>
+</tr>
+<tr>
+<td>L18</td>
+<td>18</td>
+<td>2 水準 × 1 ＋ 3 水準 × 7</td>
+<td>タグチメソッドの標準。交互作用は列1×列2 だけ</td>
+</tr>
+</tbody>
+</table>
+<p>列の並びは田口の標準形（教科書の表と同じ列番号）です。</p>
+<h3>交互作用と交絡</h3>
+<p><strong>交互作用</strong>は「温度が高いときだけ時間が効く」のように、一方の因子の水準でもう一方の効き方が変わることです。</p>
+<ul>
+<li>2 水準の表（L4・L8・L16）では、列 a と列 b の交互作用は、列番号を 2 進数で表して排他的論理和（XOR）をとった列に現れます（例：L8 の列1×列2 → 列3、列3×列4 → 列7）</li>
+<li>L9 では 1 つの交互作用が 2 列を使います（列1×列2 → 列3・列4）</li>
+<li>L18 の列1（2 水準）と列2（3 水準）の交互作用（自由度 2）は、ほかのどの列とも直交していて、列を使わずに求められます</li>
+<li>L12 と L18 では、ほかの 2 列の交互作用は特定の列に現れず、複数の列に<strong>部分的に分散</strong>します。交互作用の評価には使えませんが、交互作用が多少あっても特定の因子の効果を大きく偏らせにくいので、多くの因子のふるい分けや、タグチメソッドのパラメータ設計に使われます</li>
+<li>ただし L18 の列2・列4・列5 は、どれか 2 列の水準の組で残りの 1 列の水準が決まる関係にあります（列5 の水準 = 列2 + 列4、mod 3）。この 3 列に割り付けた因子どうしの交互作用は、自由度 4 のうち 2 が残りの列に集中して現れます。「割り付けの結果」の表に表示します</li>
+</ul>
+<p>割り付けた因子の列に、割り付けていない交互作用が現れることを<strong>交絡</strong>といいます。交絡していると、その列の効果が因子によるものか交互作用によるものか区別できません。「割り付けの結果」の表で、列ごとに現れる交互作用を確認できます。</p>
+<h3>擬水準法</h3>
+<p>3 水準の列に 2 水準の因子を割り付ける方法です。列の水準3 を、指定した水準（水準1 か水準2）に置き換えます。たとえば L18 で、2 水準の因子が 2 つ以上あるときに使います。</p>
+<ul>
+<li>擬水準の因子の自由度は 1 です。列の自由度 2 との差の 1 は誤差に含めます</li>
+<li>重複させた水準は実験数が 2 倍になるので、より確かめたい水準（現行の条件など）を重複させるのが一般的です</li>
+<li>交互作用に関わる因子は、擬水準にはできません（このツールでは割り付けません）</li>
+</ul>
+<h2>1 つの実験で取るデータ</h2>
+<ul>
+<li><strong>繰り返し</strong>：同じ条件で繰り返して測ります。平均の分散分析は全データで行い、誤差を「空き列などの誤差 e₁」と「繰り返しの誤差 e₂」に分けて表示します（検定には合わせた誤差を使います）。実験順序表では、全測定をランダムな順番に並べます</li>
+<li><strong>誤差因子の調合</strong>：使用環境・材料・劣化など、制御できない（しにくい）ばらつきの原因を<strong>誤差因子</strong>といいます。誤差因子を特性値が小さくなる側（N1）と大きくなる側（N2）などにまとめ（<strong>調合</strong>）、同じ実験 No. で全条件を測ります。平均やSN比は、実験 No. ごとの値で分析します</li>
+</ul>
+<p>どちらの場合も、空欄があると直交性が崩れるので解析しません。</p>
+<h2>特性値と SN比</h2>
+<table>
+<thead>
+<tr>
+<th>特性の種類</th>
+<th>SN比 η（db）</th>
+<th>例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>望小特性</td>
+<td>−10 log₁₀(Σy²/n)</td>
+<td>摩耗量・不良率・騒音</td>
+</tr>
+<tr>
+<td>望大特性</td>
+<td>−10 log₁₀(Σ(1/y²)/n)</td>
+<td>強度・寿命（正の値）</td>
+</tr>
+<tr>
+<td>望目特性タイプI</td>
+<td>10 log₁₀[(Sm − Ve)/n ÷ Ve]</td>
+<td>寸法・重さ（正の値で、ばらつきが平均に比例）</td>
+</tr>
+<tr>
+<td>望目特性タイプII</td>
+<td>−10 log₁₀(Ve)</td>
+<td>ずれ量・位置（0 をまたぐ値）</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>n：1 つの実験のデータ数、Sm = (Σy)²/n（平均の変動）、Ve = (Σy² − Sm)/(n − 1)（誤差分散）</li>
+<li>SN比は大きいほど良い指標です。1 つの実験のデータから計算し、それを実験ごとの「特性値」として分散分析します</li>
+<li><strong>感度</strong>：望目特性タイプIでは S = 10 log₁₀[(Sm − Ve)/n]（平均の 2 乗を db で表したもの）、タイプIIでは平均を使います</li>
+</ul>
+<p>計算できないとき：望目特性で Ve = 0（データがすべて同じ）、タイプIで Sm ≦ Ve、望大特性で 0 以下の値があるとき。画面に表示して止めます。</p>
+<h3>2 段階設計（望目特性）</h3>
+<ol>
+<li><strong>SN比を最大にする</strong>：SN比に効く因子の、SN比が大きい水準を選び、ばらつきを小さくする</li>
+<li><strong>目標値に合わせる</strong>：SN比に効かず、感度（平均）だけに効く<strong>調整因子</strong>で、平均を目標値に合わせる</li>
+</ol>
+<p>ばらつきを小さくしてから平均を動かす順番にすることで、平均を合わせるときにばらつきを悪くしません。望小・望大特性の SN比は平均の良し悪しも含むので、2 段階設計の表は表示しません。</p>
+<p>望小・望大特性の SN比は、平均とばらつきを 1 つの値にまとめるため、どちらが良くなったのか分からないという批判があります（Box らの指摘）。このツールは SN比と並べて、平均と標準偏差の分散分析も表示します。</p>
+<h2>分散分析</h2>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>平方和 S</td>
+<td>因子の水準ごとの合計 T と個数 n から Σ T²/n − CT（CT = 総合計² ÷ 全個数）。交互作用は、2 因子の水準の組（セル）の平方和から両方の主効果を引いた値</td>
+</tr>
+<tr>
+<td>自由度 φ</td>
+<td>主効果は水準数 − 1（擬水準は 1）、交互作用は積</td>
+</tr>
+<tr>
+<td>分散 V</td>
+<td>S ÷ φ</td>
+</tr>
+<tr>
+<td>F</td>
+<td>V ÷ 誤差分散 Ve（プール後）</td>
+</tr>
+<tr>
+<td>寄与率 ρ</td>
+<td>純変動 (S − φ·Ve) ÷ 合計の平方和。誤差の寄与率は 100% から因子の寄与率を引いた値</td>
+</tr>
+</tbody>
+</table>
+<h3>プール</h3>
+<p>効果の小さい項を誤差に含める（<strong>プール</strong>する）と、誤差の自由度が増えて検定と推定の精度が上がります。直交表に因子を詰めて割り付けると誤差の自由度が 0〜数個しかないことが多く、プールは必須です。</p>
+<p>このツールは次の手順で候補を示します。最終的な判断はチェックで変えられます（変えると「手動」になり、「候補に戻す」で戻せます）。</p>
+<ol>
+<li>誤差の自由度が 0 なら、分散 V の小さい半分の項をプールする</li>
+<li>残った項のうち、F &lt; 2 で最も V が小さい項をプールし、誤差分散を計算し直す。F &lt; 2 の項がなくなるまで繰り返す</li>
+<li>交互作用を残すなら、その主効果は残す（階層の原則）</li>
+</ol>
+<p>プールは「効果がない」と証明するものではありません。技術的に効くはずの因子がプールされたら、データや水準の幅を見直してください。</p>
+<h2>推定</h2>
+<p>最適条件・現行条件での推定値は、プールしていない項だけで当てはめた最小二乗モデルで計算します（交互作用を残すと、その主効果も含めます）。直交表では、全体の平均に各因子の水準の効果（水準の平均 − 全体の平均）を足した値と同じです。</p>
+<ul>
+<li><strong>信頼区間</strong>：推定値 ± t(φe, α/2) × √(Ve ÷ n_e)</li>
+<li><strong>有効反復数 n_e</strong>：推定値の分散が Ve ÷ n_e になる数。直交表では伊奈の式（全データ数 ÷ (1 + 推定に使った項の自由度の和)）・田口の式と同じ値です</li>
+<li><strong>予測区間</strong>（確認実験の値が入る範囲）：推定値 ± t × √(Ve × (1/n_e + 1/m))。m は確認実験で平均するデータ数（全データで分析した平均なら 1 実験のデータ数、それ以外は 1）</li>
+<li><strong>利得</strong>：最適条件と現行条件の推定値の差。SN比の利得が 6 db なら、ばらつき（標準偏差）は約 1/2 になります（10^(−6/20) ≒ 0.50）</li>
+</ul>
+<p>最適条件の初期値は、SN比（SN比がなければ平均）の推定値が最も良くなる組み合わせです。推定に使う因子の水準をすべての組み合わせで比べるので、交互作用を残したときもその組み合わせで選びます。</p>
+<h2>確認実験</h2>
+<p>推定は「各因子の効果が足し算で表せる（<strong>加法性</strong>）」という前提に立っています。割り付けていない交互作用があると、この前提が崩れ、推定が外れます。そこで、最適条件と現行条件で実際に実験し、次を確かめます。</p>
+<ul>
+<li>確認実験の利得 ÷ 推定の利得（<strong>再現率</strong>）が許容幅に入るか。許容幅の既定値は ±30% です。文献によって基準が異なり、統一された値はありません</li>
+<li>最適条件の確認実験の値が、予測区間に入るか</li>
+</ul>
+<p>再現しないときは、交互作用の存在、誤差因子の選び方、特性値の選び方（加法性のある特性値か）を見直します。</p>
+<h2>使うときの注意</h2>
+<ul>
+<li>水準の幅は、効果が現れる程度に広く、しかし製品・設備が成り立つ範囲で決めます。狭すぎると効果が誤差に埋もれます</li>
+<li>実験は実験順序表のランダムな順番で行ってください。同じ条件を続けて行うと、時間とともに変わる要因が因子の効果に混ざります</li>
+<li>標準偏差の推定値（足し算の推定）は 0 以下になることがあります。ばらつきの評価には SN比を使ってください</li>
+<li>多水準作成法（2 水準の列を組み合わせて 4 水準を作る方法）、動特性、外側直交表の割り付けには対応していません</li>
+<li>計算結果は判断材料としてお使いください</li>
+</ul>
+<!--EXPLAIN-END-->
+    </div>
+  </section>
+
+  <footer>
+    <a href="https://github.com/kotaooka/doe-calc">GitHub</a> ・ MIT License
+  </footer>
+</main>
+<div class="toast" id="toast" hidden></div>
+<script src="js/stats.js"></script>
+<script src="js/doe.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/doechart.js"></script>
+<script src="js/table.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
