@@ -305,6 +305,10 @@ table.grid td.rn .lvs { color: var(--muted); font-size: .72rem; margin-left: 6px
   table.fac input, table.fac select { border: 0; background: none; padding: 0; }
   .banner { padding: 6px 10px; margin-bottom: 6px; }
 }
+
+/* 支援リンク（DESIGN.md 4章）：本文の文字色を引き継ぎ、印刷では隠す */
+.support a { color: inherit; white-space: nowrap; }
+@media print { .support { display: none !important; } }
 </style>
 </head>
 <body>
@@ -598,7 +602,7 @@ table.grid td.rn .lvs { color: var(--muted); font-size: .72rem; margin-left: 6px
   </section>
 
   <footer>
-    <a href="https://github.com/kotaooka/doe-calc">GitHub</a> ・ MIT License
+    <a href="https://github.com/kotaooka/doe-calc">GitHub</a> ・ MIT License<span class="support"> ・ <a href="https://buymeacoffee.com/kotaooka" target="_blank" rel="noopener"><span aria-hidden="true">☕</span> 開発を応援する（Buy Me a Coffee）</a></span>
   </footer>
 </main>
 <div class="toast" id="toast" hidden></div>
