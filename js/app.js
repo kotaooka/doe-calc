@@ -119,12 +119,12 @@
   }
 
   // ---------- 1. 実験の設定 ----------
-  $('#arraySel').innerHTML = D.ARRAY_NAMES.map(n => `<option value="${n}">${n}（${D.getArray(n).N} 実験・${D.ARRAY_DEFS[n].note}）</option>`).join('');
+  $('#arraySel').innerHTML = D.ARRAY_NAMES.map(n => `<option value="${n}">${n}（${D.getArray(n).N}実験・${D.ARRAY_DEFS[n].note}）</option>`).join('');
   const CHAR_HINT = {
-    smaller: 'SN比 η = −10 log₁₀(Σy²/n)。0 に近いほど良い特性（摩耗量・不良率・騒音など）。',
-    larger: 'SN比 η = −10 log₁₀(Σ(1/y²)/n)。大きいほど良い特性（強度・寿命など）。正の値だけ使えます。',
-    nominal1: 'SN比 η = 10 log₁₀[(Sm − Ve)/n ÷ Ve]、感度 S = 10 log₁₀[(Sm − Ve)/n]。ばらつきが平均に比例する正の値（寸法・重さなど）。1 つの実験でデータが 2 個以上必要です。',
-    nominal2: 'SN比 η = −10 log₁₀(Ve)。0 をまたぐ値や、平均を変えてもばらつきが変わらない特性（ずれ量・位置など）。1 つの実験でデータが 2 個以上必要です。',
+    smaller: 'SN比η = −10 log₁₀(Σy²/n)。0に近いほど良い特性（摩耗量・不良率・騒音など）。',
+    larger: 'SN比η = −10 log₁₀(Σ(1/y²)/n)。大きいほど良い特性（強度・寿命など）。正の値だけ使えます。',
+    nominal1: 'SN比η = 10 log₁₀[(Sm − Ve)/n ÷ Ve]、感度S = 10 log₁₀[(Sm − Ve)/n]。ばらつきが平均に比例する正の値（寸法・重さなど）。1つの実験でデータが2個以上必要です。',
+    nominal2: 'SN比η = −10 log₁₀(Ve)。0をまたぐ値や、平均を変えてもばらつきが変わらない特性（ずれ量・位置など）。1つの実験でデータが2個以上必要です。',
   };
   function renderSetup() {
     $('#titleIn').value = st.title; $('#charNameIn').value = st.charName; $('#charUnitIn').value = st.charUnit;
@@ -132,7 +132,7 @@
     $('#charHint').textContent = CHAR_HINT[st.char];
     $$('#outerSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === st.outer.kind)));
     $('#outerHint').textContent = st.outer.kind === 'noise'
-      ? '誤差因子（使用環境・材料のばらつきなど）を、特性値が小さくなる条件（N1）と大きくなる条件（N2）などにまとめ、同じ実験 No. で全条件を測ります。条件の名前を変えられます。'
+      ? '誤差因子（使用環境・材料のばらつきなど）を、特性値が小さくなる条件（N1）と大きくなる条件（N2）などにまとめ、同じ実験No. で全条件を測ります。条件の名前を変えられます。'
       : '同じ条件で繰り返して測ります。平均の分散分析は全データで行い、繰り返しの誤差を誤差に含めます。';
     const k = K();
     $('#outerNames').innerHTML = st.outer.kind === 'noise' || k > 1
@@ -162,14 +162,14 @@
     $('#facBody').innerHTML = st.factors.map((f, i) => {
       const colOpts = ['<option value="auto">自動</option>'].concat(Array.from({ length: a.nc }, (_, c) => canUse(f, c) ? `<option value="${c + 1}">${c + 1}</option>` : '')).join('');
       const pseudo = ASG && ASG.ok && ASG.pseudo[i];
-      const dupSel = pseudo ? `<select data-f="${i}" data-k="dup" aria-label="重複させる水準">${[0, 1].map(j => `<option value="${j}"${(f.dup | 0) === j ? ' selected' : ''}>${esc(levelLabel(f, j))} を重複</option>`).join('')}</select>` : '';
+      const dupSel = pseudo ? `<select data-f="${i}" data-k="dup" aria-label="重複させる水準">${[0, 1].map(j => `<option value="${j}"${(f.dup | 0) === j ? ' selected' : ''}>${esc(levelLabel(f, j))}を重複</option>`).join('')}</select>` : '';
       return `<tr>
         <td class="l"><input type="text" class="nm" data-f="${i}" data-k="name" value="${esc(f.name)}" aria-label="因子${i + 1}の名前"></td>
         <td class="l"><input type="text" class="un" data-f="${i}" data-k="unit" value="${esc(f.unit)}" placeholder="単位" aria-label="単位"></td>
         <td class="l"><select data-f="${i}" data-k="nlev" aria-label="水準数"><option value="2"${f.nlev === 2 ? ' selected' : ''}>2</option><option value="3"${f.nlev === 3 ? ' selected' : ''}>3</option></select></td>
         ${[0, 1, 2].map(j => `<td class="l">${j < f.nlev ? `<input type="text" class="lv" data-f="${i}" data-k="lv${j}" value="${esc(f.levels[j] || '')}" placeholder="水準${j + 1}" aria-label="水準${j + 1}">` : ''}</td>`).join('')}
         <td class="l"><select data-f="${i}" data-k="col" aria-label="列">${colOpts}</select>${ASG && ASG.ok && f.col === 'auto' ? ` <span class="hint">→ ${ASG.cols[i] + 1}</span>` : ''}</td>
-        <td class="ps">${pseudo ? '擬水準 ' + dupSel : ''}</td>
+        <td class="ps">${pseudo ? '擬水準' + dupSel : ''}</td>
         <td><button class="del" type="button" data-delf="${i}" title="この因子を削除" aria-label="削除">×</button></td>
       </tr>`;
     }).join('');
@@ -202,7 +202,7 @@
     refreshPlan();
   });
   $('#addFac').addEventListener('click', () => {
-    if (st.factors.length >= arr().nc) { toast(`${st.array} の列数（${arr().nc}）を超えるので追加できません`); return; }
+    if (st.factors.length >= arr().nc) { toast(`${st.array}の列数（${arr().nc}）を超えるので追加できません`); return; }
     const used = new Set(st.factors.map(f => f.name));
     let i = st.factors.length; while (used.has(LETTERS[i]) && i < 25) i++;
     // 3 水準の列がある表（L9・L18）では 3 水準を既定にする
@@ -216,7 +216,7 @@
   $('#interList').addEventListener('change', e => { const k = e.target.dataset.ii; if (k == null) return; st.inter[+k][+e.target.dataset.side] = +e.target.value; refreshPlan(); });
   $('#interList').addEventListener('click', e => { const b = e.target.closest('[data-deli]'); if (!b) return; st.inter.splice(+b.dataset.deli, 1); refreshPlan(); });
   $('#addInter').addEventListener('click', () => {
-    if (st.factors.length < 2) { toast('因子を 2 つ以上入れてください'); return; }
+    if (st.factors.length < 2) { toast('因子を2つ以上入れてください'); return; }
     // まだ指定していない組を選ぶ
     for (let p = 0; p < st.factors.length; p++) for (let q = p + 1; q < st.factors.length; q++) {
       if (!st.inter.some(([a, b]) => (a === p && b === q) || (a === q && b === p))) { st.inter.push([p, q]); refreshPlan(); return; }
@@ -228,7 +228,7 @@
     const log = [];
     if (!ASG.ok) ASG.errors.forEach(m => log.push(`<li class="err">${esc(m)}</li>`));
     else {
-      log.push(`<li class="info">${esc(a.name)}：${a.N} 実験 × データ ${K()} 個 ＝ ${a.N * K()} 回の測定。誤差の自由度（行ごとの指標の解析）：${a.N - 1 - D.termsOf(DES, ASG).reduce((s, t) => s + t.df, 0)}</li>`);
+      log.push(`<li class="info">${esc(a.name)}：${a.N}実験 × データ${K()}個 ＝ ${a.N * K()}回の測定。誤差の自由度（行ごとの指標の解析）：${a.N - 1 - D.termsOf(DES, ASG).reduce((s, t) => s + t.df, 0)}</li>`);
       ASG.warnings.forEach(m => log.push(`<li class="warn">${esc(m)}</li>`));
     }
     $('#asgLog').innerHTML = log.join('');
@@ -237,7 +237,7 @@
     let h = ASG.table.map(r => {
       let use = '<td class="use-e">空き（誤差）</td>';
       if (r.use === 'factor') use = `<td class="use-f">${esc(F[r.factor].name)}${ASG.pseudo[r.factor] ? `<span class="hint">（擬水準：水準3 → ${esc(levelLabel(st.factors[r.factor], F[r.factor].dup))}）</span>` : ''}</td>`;
-      else if (r.use === 'inter') { const it = ASG.inter[r.inter]; use = `<td class="use-i">${esc(nameI(it))}${it.cols.length > 1 ? `<span class="hint">（${it.cols.indexOf(r.col) + 1}/${it.cols.length} 列目）</span>` : ''}</td>`; }
+      else if (r.use === 'inter') { const it = ASG.inter[r.inter]; use = `<td class="use-i">${esc(nameI(it))}${it.cols.length > 1 ? `<span class="hint">（${it.cols.indexOf(r.col) + 1}/${it.cols.length}列目）</span>` : ''}</td>`; }
       const al = r.alias.map(([p, q]) => `${F[p].name}×${F[q].name}`).join('、');
       return `<tr><td class="num">${r.col + 1}</td><td class="num">${r.levels}</td>${use}<td class="alias${al ? '' : ' none'}">${al ? esc(al) : '―'}</td></tr>`;
     }).join('');
@@ -258,7 +258,7 @@
   function orderRows() {
     if (!ASG.ok) return null;
     const lev = D.runLevels(DES, ASG), k = K();
-    const head = ['順番', '実験 No.'].concat(st.outer.kind === 'repeat' && k > 1 ? ['回'] : [], st.factors.map((f, i) => facName(f, i) + (f.unit ? `（${f.unit}）` : '')), st.outer.kind === 'noise' ? ['測る条件'] : []);
+    const head = ['順番', '実験No.'].concat(st.outer.kind === 'repeat' && k > 1 ? ['回'] : [], st.factors.map((f, i) => facName(f, i) + (f.unit ? `（${f.unit}）` : '')), st.outer.kind === 'noise' ? ['測る条件'] : []);
     const rows = orderRuns().map((x, i) => [String(i + 1), String(x.r + 1)].concat(
       st.outer.kind === 'repeat' && k > 1 ? [outerName(x.j)] : [],
       st.factors.map((f, fi) => levelLabel(f, lev[x.r][fi])),
@@ -268,9 +268,9 @@
   function renderOrder() {
     const k = K();
     $('#orderHint').textContent = st.outer.kind === 'repeat' && k > 1
-      ? `${arr().N} 実験 × ${k} 回の全 ${arr().N * k} 回を、ランダムな順番で行います。同じ条件をまとめて続けて行うと、時間とともに変わる要因（温度・材料・慣れ）が因子の効果に混ざるためです。`
-      : st.outer.kind === 'noise' ? `実験 No. をランダムな順番で行い、それぞれで ${Array.from({ length: k }, (_, j) => outerName(j)).join('・')} を測ります。`
-        : `実験 No. をランダムな順番で行います。`;
+      ? `${arr().N}実験 × ${k}回の全${arr().N * k}回を、ランダムな順番で行います。同じ条件をまとめて続けて行うと、時間とともに変わる要因（温度・材料・慣れ）が因子の効果に混ざるためです。`
+      : st.outer.kind === 'noise' ? `実験No. をランダムな順番で行い、それぞれで${Array.from({ length: k }, (_, j) => outerName(j)).join('・')}を測ります。`
+        : `実験No. をランダムな順番で行います。`;
     const o = orderRows();
     if (!o) { $('#orderTbl').innerHTML = '<p class="empty">割り付けを直すと表示します。</p>'; return; }
     $('#orderTbl').innerHTML = `<table class="order"><thead><tr>${o.head.map((h, i) => `<th class="${i >= 2 ? 'l' : ''}">${esc(h)}</th>`).join('')}</tr></thead><tbody>${o.rows.map(r => `<tr>${r.map((v, i) => `<td class="${i === 0 ? 'run' : i >= 2 ? 'l' : 'num'}">${esc(v)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
@@ -346,7 +346,7 @@
     for (const m of METRICS) RES[m] = D.analyze(DES, ASG, Y, { kind: st.outer.kind, char: st.char, metric: m, pool: st.pool[m] ?? null, alpha: st.alpha });
     const R = RES[st.metric];
     let h = '<h2><span class="step">5</span>結果</h2>';
-    h += `<div class="banner"><span class="big">${esc(st.array)}・${esc(CHAR_NAME[st.char])}</span><span class="sub2">因子 ${F.length} ／ 交互作用 ${DES.inter.length} ／ 1 実験のデータ ${k} 個（${st.outer.kind === 'noise' ? '誤差因子の調合' : '繰り返し'}）／ 特性値：${esc(charLabel())}</span></div>`;
+    h += `<div class="banner"><span class="big">${esc(st.array)}・${esc(CHAR_NAME[st.char])}</span><span class="sub2">因子${F.length} ／ 交互作用${DES.inter.length} ／ 1実験のデータ${k}個（${st.outer.kind === 'noise' ? '誤差因子の調合' : '繰り返し'}）／ 特性値：${esc(charLabel())}</span></div>`;
     h += `<div class="metric-bar"><div class="seg seg-wrap" id="metricSeg">${METRICS.map(m => `<button type="button" data-metric="${m}" aria-pressed="${m === st.metric}">${esc(metricName(m))}</button>`).join('')}</div>
       <label class="field"><span class="lbl">有意水準</span><input type="number" id="alphaIn" step="0.01" min="0.001" max="0.5" value="${st.alpha}"></label></div>`;
     h += `<div class="print-only"><h3 class="sec">指標：${esc(metricName(st.metric))}</h3></div>`;
@@ -371,18 +371,18 @@
     const manual = st.pool[st.metric] != null;
     const row = t => `<tr class="${t.pooled ? 'pooled' : ''}"><td class="l">${esc(t.label)}</td><td class="num">${sig(t.S, 5)}</td><td class="num">${t.df}</td><td class="num">${sig(t.V, 5)}</td>
       <td class="num">${t.pooled ? '（プール）' : fix(t.F, 2)}</td><td class="num${t.sig ? ' sig' : ''}">${t.pooled ? '' : pval(t.p)}</td><td class="num">${t.pooled ? '' : pctv(t.rho)}</td>
-      <td class="pl no-print"><input type="checkbox" data-pool="${t.key}"${t.pooled ? ' checked' : ''} aria-label="${esc(t.label)} をプール"></td></tr>`;
+      <td class="pl no-print"><input type="checkbox" data-pool="${t.key}"${t.pooled ? ' checked' : ''} aria-label="${esc(t.label)}をプール"></td></tr>`;
     let h = `<h3 class="sec">分散分析表（${esc(metricName(st.metric))}${R.raw ? '・全データ' : '・実験ごとの値'}）</h3>`;
-    h += `<div class="tbl-wrap"><table class="anova"><thead><tr><th class="l">要因</th><th>平方和 S</th><th>自由度 φ</th><th>分散 V</th><th>F</th><th>p 値</th><th>寄与率 ρ</th><th class="no-print">プール</th></tr></thead><tbody>`;
+    h += `<div class="tbl-wrap"><table class="anova"><thead><tr><th class="l">要因</th><th>平方和S</th><th>自由度φ</th><th>分散V</th><th>F</th><th>p値</th><th>寄与率ρ</th><th class="no-print">プール</th></tr></thead><tbody>`;
     h += R.terms.map(row).join('');
     if (R.e2) {
-      h += `<tr class="sub"><td class="l">　空き列などの誤差 e₁</td><td class="num">${sig(R.Se - R.e2.S, 5)}</td><td class="num">${R.dfe - R.e2.df}</td><td class="num">${R.dfe - R.e2.df > 0 ? sig((R.Se - R.e2.S) / (R.dfe - R.e2.df), 5) : '―'}</td><td colspan="4"></td></tr>`;
-      h += `<tr class="sub"><td class="l">　繰り返しの誤差 e₂</td><td class="num">${sig(R.e2.S, 5)}</td><td class="num">${R.e2.df}</td><td class="num">${R.e2.df > 0 ? sig(R.e2.S / R.e2.df, 5) : '―'}</td><td colspan="4"></td></tr>`;
+      h += `<tr class="sub"><td class="l">　空き列などの誤差e₁</td><td class="num">${sig(R.Se - R.e2.S, 5)}</td><td class="num">${R.dfe - R.e2.df}</td><td class="num">${R.dfe - R.e2.df > 0 ? sig((R.Se - R.e2.S) / (R.dfe - R.e2.df), 5) : '―'}</td><td colspan="4"></td></tr>`;
+      h += `<tr class="sub"><td class="l">　繰り返しの誤差e₂</td><td class="num">${sig(R.e2.S, 5)}</td><td class="num">${R.e2.df}</td><td class="num">${R.e2.df > 0 ? sig(R.e2.S / R.e2.df, 5) : '―'}</td><td colspan="4"></td></tr>`;
     }
     h += `<tr class="err"><td class="l">誤差（プール後）</td><td class="num">${sig(R.Sp, 5)}</td><td class="num">${R.dfp}</td><td class="num">${R.dfp > 0 ? sig(R.Vp, 5) : '―'}</td><td></td><td></td><td class="num">${pctv(R.rhoE)}</td><td class="no-print"></td></tr>`;
     h += `<tr class="tot"><td class="l">合計</td><td class="num">${sig(R.ST, 5)}</td><td class="num">${R.dfT}</td><td colspan="5"></td></tr>`;
     h += '</tbody></table></div>';
-    h += `<p class="hint">プールの${manual ? '指定は手動です' : '候補を表示しています'}：誤差の自由度が 0 なら効果の小さい半分を、そのあと F &lt; 2 の項を順に誤差に含めます（交互作用を残すなら、その主効果は残します）。最終的な判断はチェックで変えてください。寄与率は純変動 (S − φ·Ve) ÷ 合計です。${manual ? ' <button class="btn small no-print" type="button" id="poolReset">候補に戻す</button>' : ''}</p>`;
+    h += `<p class="hint">プールの${manual ? '指定は手動です' : '候補を表示しています'}：誤差の自由度が0なら効果の小さい半分を、そのあとF &lt; 2の項を順に誤差に含めます（交互作用を残すなら、その主効果は残します）。最終的な判断はチェックで変えてください。寄与率は純変動 (S − φ·Ve) ÷ 合計です。${manual ? ' <button class="btn small no-print" type="button" id="poolReset">候補に戻す</button>' : ''}</p>`;
     return h;
   }
 
@@ -393,7 +393,7 @@
     const F = DES.factors, cls = D.classify(F, sn, adj);
     const LAB = { sn: 'SN比を上げる因子', adjust: '調整因子', both: 'SN比を優先（調整にも効く）', none: 'コスト・作業性で決める' };
     const bestLv = (R, i, dir) => { const lm = R.levelMeans[i]; let b = 0; lm.forEach((v, j) => { if (dir * v > dir * lm[b] + 1e-12) b = j; }); return b; };
-    let h = `<h3 class="sec">2 段階設計</h3><p class="hint">SN比に効く因子でばらつきを小さくし、SN比に効かず${esc(metricName(adjM))}だけに効く因子（調整因子）で目標値に合わせます。「効く」はプール後に残った項で、統計的に有意でも実用上は小さい効果がありえるので、幅の大きさも見て判断してください。</p>`;
+    let h = `<h3 class="sec">2段階設計</h3><p class="hint">SN比に効く因子でばらつきを小さくし、SN比に効かず${esc(metricName(adjM))}だけに効く因子（調整因子）で目標値に合わせます。「効く」はプール後に残った項で、統計的に有意でも実用上は小さい効果がありえるので、幅の大きさも見て判断してください。</p>`;
     h += `<div class="tbl-wrap"><table><thead><tr><th class="l">因子</th><th>SN比</th><th>SN比の幅（db）</th><th class="l">SN比が最大の水準</th><th>${esc(metricName(adjM))}</th><th>${esc(metricName(adjM))}の幅</th><th class="l">分類</th></tr></thead><tbody>`;
     h += cls.map(c => {
       const f = st.factors[c.f];
@@ -424,7 +424,7 @@
     h += `<div class="tbl-wrap"><table class="cond"><thead><tr><th class="l">因子</th><th class="l">最適条件</th><th class="l">現行条件</th></tr></thead><tbody>`;
     h += F.map((f, i) => {
       const opts = sel => Array.from({ length: f.nlev }, (_, j) => `<option value="${j}"${j === sel ? ' selected' : ''}>${esc(levelFull(st.factors[i], j))}</option>`).join('');
-      return `<tr><td class="l">${esc(f.name)}</td><td class="l"><select data-cond="opt" data-i="${i}" aria-label="${esc(f.name)} の最適条件">${opts(opt[i])}</select></td><td class="l"><select data-cond="cur" data-i="${i}" aria-label="${esc(f.name)} の現行条件">${opts(cur[i])}</select></td></tr>`;
+      return `<tr><td class="l">${esc(f.name)}</td><td class="l"><select data-cond="opt" data-i="${i}" aria-label="${esc(f.name)}の最適条件">${opts(opt[i])}</select></td><td class="l"><select data-cond="cur" data-i="${i}" aria-label="${esc(f.name)}の現行条件">${opts(cur[i])}</select></td></tr>`;
     }).join('');
     h += '</tbody></table></div>';
     if (validCond(st.optCond)) h += '<div class="tools no-print"><button class="btn small" type="button" id="optReset">最適条件を自動で選び直す</button></div>';
@@ -433,15 +433,15 @@
       const R = RES[m];
       if (R.errors.length || !R.model) { h += `<tr><td class="l">${esc(metricName(m))}</td><td colspan="6" class="l verdict-na">計算できません</td></tr>`; continue; }
       const eo = D.estimate(R, opt, mOf(R)), ec = D.estimate(R, cur, mOf(R)), g = D.gain(R, opt, cur), u = yUnit(m);
-      const ci = eo.ci ? `${sig(eo.ci[0], 5)} 〜 ${sig(eo.ci[1], 5)}` : '―（誤差の自由度 0）';
+      const ci = eo.ci ? `${sig(eo.ci[0], 5)} 〜 ${sig(eo.ci[1], 5)}` : '―（誤差の自由度0）';
       h += `<tr><td class="l">${esc(metricName(m))}${u ? `（${esc(u)}）` : ''}</td><td class="num best">${sig(eo.est, 5)}</td><td class="num">${ci}</td><td class="num">${sig(ec.est, 5)}</td><td class="num best">${sig(g.est, 4)}</td><td class="num">${g.ci ? `${sig(g.ci[0], 4)} 〜 ${sig(g.ci[1], 4)}` : '―'}</td><td class="num">${fix(eo.ne, 2)}</td></tr>`;
     }
     h += '</tbody></table></div>';
     if (RES.sd && !RES.sd.errors.length && RES.sd.model) {
       const e = D.estimate(RES.sd, opt, 1);
-      if (e.est <= 0) h += '<ul class="log"><li class="warn">標準偏差の推定値が 0 以下です。標準偏差は加法性が成り立ちにくいので、ばらつきの評価には SN比を使ってください</li></ul>';
+      if (e.est <= 0) h += '<ul class="log"><li class="warn">標準偏差の推定値が0以下です。標準偏差は加法性が成り立ちにくいので、ばらつきの評価にはSN比を使ってください</li></ul>';
     }
-    h += '<p class="hint">推定は、プールしていない項だけで当てはめた最小二乗モデルによります（交互作用を残すと、その主効果も含めます）。有効反復数 n_e は、推定値の分散が Ve ÷ n_e になる数で、直交表では伊奈の式・田口の式と同じ値です。</p>';
+    h += '<p class="hint">推定は、プールしていない項だけで当てはめた最小二乗モデルによります（交互作用を残すと、その主効果も含めます）。有効反復数n_eは、推定値の分散がVe ÷ n_eになる数で、直交表では伊奈の式・田口の式と同じ値です。</p>';
     return h;
   }
 
@@ -449,7 +449,7 @@
   function confirmSec() {
     const k = K(), opt = optCond(), cur = curCond();
     const inputs = key => Array.from({ length: k }, (_, j) => `<input type="text" inputmode="decimal" id="conf-${key}-${j}" data-conf="${key}" data-j="${j}" value="${esc(st.conf[key][j] || '')}" placeholder="${esc(outerName(j))}" aria-label="${key === 'opt' ? '最適条件' : '現行条件'}の${esc(outerName(j))}">`).join('');
-    let h = `<h3 class="sec">確認実験</h3><p class="hint">上で選んだ最適条件と現行条件で、計画と同じ取り方（${k} 個：${Array.from({ length: k }, (_, j) => outerName(j)).join('・')}）でデータを取って入れます。推定した利得と確認実験の利得を比べ、最適条件の値が予測区間に入るかを見ます。</p>`;
+    let h = `<h3 class="sec">確認実験</h3><p class="hint">上で選んだ最適条件と現行条件で、計画と同じ取り方（${k}個：${Array.from({ length: k }, (_, j) => outerName(j)).join('・')}）でデータを取って入れます。推定した利得と確認実験の利得を比べ、最適条件の値が予測区間に入るかを見ます。</p>`;
     h += `<div class="conf-in"><div class="card"><h4>最適条件</h4>${inputs('opt')}</div><div class="card"><h4>現行条件</h4>${inputs('cur')}</div></div>`;
     h += `<div class="metric-bar" style="margin-top:10px"><label class="field"><span class="lbl">利得の再現の許容幅 ±</span><input type="number" id="tolIn" min="1" max="100" step="1" value="${st.tol}"><span class="lbl">%</span></label></div>`;
     h += '<p class="hint">許容幅の既定値（±30%）は目安です。文献によって基準が異なり、統一された値はありません。</p>';
@@ -572,13 +572,13 @@
       // 読み込んだ条件・プールの指定は、割り付けの確認のあとも残す
       const keep = { pool: st.pool, optCond: st.optCond, curCond: st.curCond };
       fixShape(); recomputeAssign(); Object.assign(st, keep);
-      refreshPlan(); toast(`${f.name} を読み込みました`);
+      refreshPlan(); toast(`${f.name}を読み込みました`);
     } catch (err) { toast('読み込めませんでした：' + err.message); }
   });
   let themeBeforePrint = null;
   window.addEventListener('beforeprint', () => {
     themeBeforePrint = document.documentElement.getAttribute('data-theme'); document.documentElement.dataset.theme = 'light'; redrawCharts();
-    const d = new Date(); $('#printDate').textContent = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} 作成`;
+    const d = new Date(); $('#printDate').textContent = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}作成`;
   });
   window.addEventListener('afterprint', () => { if (themeBeforePrint == null) document.documentElement.removeAttribute('data-theme'); else document.documentElement.dataset.theme = themeBeforePrint; redrawCharts(); });
 

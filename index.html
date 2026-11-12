@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>実験計画法の計算ツール｜直交表・分散分析・タグチメソッド・SN比</title>
-<meta name="description" content="直交表（L4〜L18）への割り付け、実験順序表、分散分析、タグチメソッドの SN比と 2 段階設計、最適条件の推定と確認実験までをブラウザだけで計算する">
+<meta name="description" content="直交表（L4〜L18）への割り付け、実験順序表、分散分析、タグチメソッドのSN比と2段階設計、最適条件の推定と確認実験までをブラウザだけで計算する">
 <link rel="canonical" href="https://kotaooka.github.io/doe-calc/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="QC Workbench">
 <meta property="og:title" content="実験計画法の計算ツール｜直交表・分散分析・タグチメソッド・SN比">
-<meta property="og:description" content="直交表（L4〜L18）への割り付け、実験順序表、分散分析、タグチメソッドの SN比と 2 段階設計、最適条件の推定と確認実験までをブラウザだけで計算する">
+<meta property="og:description" content="直交表（L4〜L18）への割り付け、実験順序表、分散分析、タグチメソッドのSN比と2段階設計、最適条件の推定と確認実験までをブラウザだけで計算する">
 <meta property="og:url" content="https://kotaooka.github.io/doe-calc/">
 <meta property="og:image" content="https://kotaooka.github.io/doe-calc/og.png">
 <meta property="og:image:width" content="1200">
@@ -59,7 +59,7 @@
 }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
-html, body { margin: 0; }
+html, body { text-autospace: normal; margin: 0; }
 body { background: var(--bg); color: var(--ink); font-family: var(--f-ui); font-size: 15px; line-height: 1.6; -webkit-text-size-adjust: 100%; }
 .num, .mono, input[type="number"], input.num { font-family: var(--f-num); font-variant-numeric: tabular-nums; }
 .wrap { max-width: 1120px; margin: 0 auto; padding-inline: 16px; padding-block: 0 56px; }
@@ -341,14 +341,14 @@ table.grid td.rn .lvs { color: var(--muted); font-size: .72rem; margin-left: 6px
           <option value="smaller">望小特性（小さいほど良い）</option>
           <option value="larger">望大特性（大きいほど良い）</option>
           <option value="nominal1">望目特性タイプI（目標値に合わせる・正の値）</option>
-          <option value="nominal2">望目特性タイプII（目標値に合わせる・0 をまたぐ値）</option>
+          <option value="nominal2">望目特性タイプII（目標値に合わせる・0をまたぐ値）</option>
         </select></label>
         <label class="field"><span class="lbl">直交表</span><select id="arraySel"></select></label>
       </div>
       <p class="hint" id="charHint"></p>
       <div class="sub">
         <div class="row">
-          <span class="lbl">1 つの実験で取るデータ</span>
+          <span class="lbl">1つの実験で取るデータ</span>
           <div class="seg" id="outerSeg"><button type="button" data-v="repeat">繰り返し</button><button type="button" data-v="noise">誤差因子の調合</button></div>
           <label class="field" style="flex-direction:row;align-items:center;gap:6px"><span class="lbl">データ数</span><input type="number" id="kIn" min="1" max="10" step="1" style="width:5em"></label>
         </div>
@@ -375,7 +375,7 @@ table.grid td.rn .lvs { color: var(--muted); font-size: .72rem; margin-left: 6px
       <p class="hint" id="orderHint"></p>
       <div class="tools no-print">
         <button class="btn" type="button" id="shuffleBtn">順番を並べ替え直す</button>
-        <button class="btn" type="button" id="orderCsv">CSV で保存</button>
+        <button class="btn" type="button" id="orderCsv">CSVで保存</button>
         <button class="btn" type="button" id="orderPrint">順序表を印刷</button>
       </div>
       <div class="tbl-wrap" id="orderTbl"></div>
@@ -385,7 +385,7 @@ table.grid td.rn .lvs { color: var(--muted); font-size: .72rem; margin-left: 6px
   <section data-panel="analysis" hidden>
     <div class="box" id="dataSec">
       <h2><span class="step">4</span>データ</h2>
-      <p class="hint">実験 No. の順（直交表の行の順）に入れます。Excel の表をコピーして、表の左上のセルに貼り付けられます。空欄があると解析できません。</p>
+      <p class="hint">実験No. の順（直交表の行の順）に入れます。Excelの表をコピーして、表の左上のセルに貼り付けられます。空欄があると解析できません。</p>
       <div class="tools">
         <button class="btn" type="button" id="sampleTaguchi">サンプル：L18・望目</button>
         <button class="btn" type="button" id="sampleInter">サンプル：L8・交互作用</button>
@@ -395,7 +395,7 @@ table.grid td.rn .lvs { color: var(--muted); font-size: .72rem; margin-left: 6px
         <span class="spacer"></span><span class="saved hint" id="saved"></span>
       </div>
       <div class="grid-wrap" id="grid"></div>
-      <p class="privacy">データはこの端末の中だけで計算し、外部に送信しません。入力は自動でこの端末に保存します。</p>
+      <p class="privacy">入力したデータは、この端末の外に送りません。入力は自動でこの端末に保存します。</p>
     </div>
 
     <div class="box" id="out"></div>
@@ -405,17 +405,17 @@ table.grid td.rn .lvs { color: var(--muted); font-size: .72rem; margin-left: 6px
     <div class="box explain">
 <!--EXPLAIN-START-->
 <h1>実験計画法の解説</h1>
-<p>因子（条件）を<strong>直交表</strong>に割り付けて少ない実験回数で効果を調べ、<strong>分散分析</strong>で効いている因子を見分け、最も良い条件とその効果（利得）を推定します。タグチメソッド（品質工学）の <strong>SN比</strong>と<strong>2 段階設計</strong>にも対応しています。</p>
+<p>因子（条件）を<strong>直交表</strong>に割り付けて少ない実験回数で効果を調べ、<strong>分散分析</strong>で効いている因子を見分け、最も良い条件とその効果（利得）を推定します。タグチメソッド（品質工学）の <strong>SN比</strong>と<strong>2段階設計</strong>にも対応しています。</p>
 <h2>使い方の流れ</h2>
 <ol>
-<li><strong>計画</strong>タブで、特性値・特性の種類・直交表・1 つの実験で取るデータ（繰り返しか誤差因子の調合か）を決めます</li>
+<li><strong>計画</strong>タブで、特性値・特性の種類・直交表・1つの実験で取るデータ（繰り返しか誤差因子の調合か）を決めます</li>
 <li>因子と水準の実際の値を入れ、調べたい交互作用を指定します。列は自動で割り付けます</li>
-<li><strong>実験順序表</strong>の順番で実験します（CSV で保存・印刷できます）</li>
+<li><strong>実験順序表</strong>の順番で実験します（CSVで保存・印刷できます）</li>
 <li><strong>解析</strong>タブにデータを入れると、分散分析・要因効果図・推定を表示します</li>
 <li>最適条件と現行条件で<strong>確認実験</strong>を行い、利得が再現するかを確かめます</li>
 </ol>
 <h2>直交表</h2>
-<p>どの 2 列を取り出しても、水準の組み合わせが同じ回数ずつ現れる表です。このため、ある因子の効果を調べるとき、ほかの因子の影響が水準ごとに均等に入り、打ち消し合います。</p>
+<p>どの2列を取り出しても、水準の組み合わせが同じ回数ずつ現れる表です。このため、ある因子の効果を調べるとき、ほかの因子の影響が水準ごとに均等に入り、打ち消し合います。</p>
 <table>
 <thead>
 <tr>
@@ -429,38 +429,38 @@ table.grid td.rn .lvs { color: var(--muted); font-size: .72rem; margin-left: 6px
 <tr>
 <td>L4</td>
 <td>4</td>
-<td>2 水準 × 3</td>
-<td>2〜3 因子の予備的な実験</td>
+<td>2水準 × 3</td>
+<td>2〜3因子の予備的な実験</td>
 </tr>
 <tr>
 <td>L8</td>
 <td>8</td>
-<td>2 水準 × 7</td>
-<td>2 水準の因子と、少数の交互作用</td>
+<td>2水準 × 7</td>
+<td>2水準の因子と、少数の交互作用</td>
 </tr>
 <tr>
 <td>L9</td>
 <td>9</td>
-<td>3 水準 × 4</td>
-<td>3 水準の因子を 4 つまで（交互作用を調べるなら 2 因子とその交互作用）</td>
+<td>3水準 × 4</td>
+<td>3水準の因子を4つまで（交互作用を調べるなら2因子とその交互作用）</td>
 </tr>
 <tr>
 <td>L12</td>
 <td>12</td>
-<td>2 水準 × 11</td>
+<td>2水準 × 11</td>
 <td>多くの因子のふるい分け。交互作用は割り付けられない</td>
 </tr>
 <tr>
 <td>L16</td>
 <td>16</td>
-<td>2 水準 × 15</td>
-<td>2 水準の因子と、多めの交互作用</td>
+<td>2水準 × 15</td>
+<td>2水準の因子と、多めの交互作用</td>
 </tr>
 <tr>
 <td>L18</td>
 <td>18</td>
-<td>2 水準 × 1 ＋ 3 水準 × 7</td>
-<td>タグチメソッドの標準。交互作用は列1×列2 だけ</td>
+<td>2水準 × 1 ＋ 3水準 × 7</td>
+<td>タグチメソッドの標準。交互作用は列1×列2だけ</td>
 </tr>
 </tbody>
 </table>
@@ -468,32 +468,32 @@ table.grid td.rn .lvs { color: var(--muted); font-size: .72rem; margin-left: 6px
 <h3>交互作用と交絡</h3>
 <p><strong>交互作用</strong>は「温度が高いときだけ時間が効く」のように、一方の因子の水準でもう一方の効き方が変わることです。</p>
 <ul>
-<li>2 水準の表（L4・L8・L16）では、列 a と列 b の交互作用は、列番号を 2 進数で表して排他的論理和（XOR）をとった列に現れます（例：L8 の列1×列2 → 列3、列3×列4 → 列7）</li>
-<li>L9 では 1 つの交互作用が 2 列を使います（列1×列2 → 列3・列4）</li>
-<li>L18 の列1（2 水準）と列2（3 水準）の交互作用（自由度 2）は、ほかのどの列とも直交していて、列を使わずに求められます</li>
-<li>L12 と L18 では、ほかの 2 列の交互作用は特定の列に現れず、複数の列に<strong>部分的に分散</strong>します。交互作用の評価には使えませんが、交互作用が多少あっても特定の因子の効果を大きく偏らせにくいので、多くの因子のふるい分けや、タグチメソッドのパラメータ設計に使われます</li>
-<li>ただし L18 の列2・列4・列5 は、どれか 2 列の水準の組で残りの 1 列の水準が決まる関係にあります（列5 の水準 = 列2 + 列4、mod 3）。この 3 列に割り付けた因子どうしの交互作用は、自由度 4 のうち 2 が残りの列に集中して現れます。「割り付けの結果」の表に表示します</li>
+<li>2水準の表（L4・L8・L16）では、列aと列bの交互作用は、列番号を2進数で表して排他的論理和（XOR）をとった列に現れます（例：L8の列1×列2 → 列3、列3×列4 → 列7）</li>
+<li>L9では1つの交互作用が2列を使います（列1×列2 → 列3・列4）</li>
+<li>L18の列1（2水準）と列2（3水準）の交互作用（自由度2）は、ほかのどの列とも直交していて、列を使わずに求められます</li>
+<li>L12とL18では、ほかの2列の交互作用は特定の列に現れず、複数の列に<strong>部分的に分散</strong>します。交互作用の評価には使えませんが、交互作用が多少あっても特定の因子の効果を大きく偏らせにくいので、多くの因子のふるい分けや、タグチメソッドのパラメータ設計に使われます</li>
+<li>ただしL18の列2・列4・列5は、どれか2列の水準の組で残りの1列の水準が決まる関係にあります（列5の水準 = 列2 + 列4、mod 3）。この3列に割り付けた因子どうしの交互作用は、自由度4のうち2が残りの列に集中して現れます。「割り付けの結果」の表に表示します</li>
 </ul>
 <p>割り付けた因子の列に、割り付けていない交互作用が現れることを<strong>交絡</strong>といいます。交絡していると、その列の効果が因子によるものか交互作用によるものか区別できません。「割り付けの結果」の表で、列ごとに現れる交互作用を確認できます。</p>
 <h3>擬水準法</h3>
-<p>3 水準の列に 2 水準の因子を割り付ける方法です。列の水準3 を、指定した水準（水準1 か水準2）に置き換えます。たとえば L18 で、2 水準の因子が 2 つ以上あるときに使います。</p>
+<p>3水準の列に2水準の因子を割り付ける方法です。列の水準3を、指定した水準（水準1か水準2）に置き換えます。たとえばL18で、2水準の因子が2つ以上あるときに使います。</p>
 <ul>
-<li>擬水準の因子の自由度は 1 です。列の自由度 2 との差の 1 は誤差に含めます</li>
-<li>重複させた水準は実験数が 2 倍になるので、より確かめたい水準（現行の条件など）を重複させるのが一般的です</li>
+<li>擬水準の因子の自由度は1です。列の自由度2との差の1は誤差に含めます</li>
+<li>重複させた水準は実験数が2倍になるので、より確かめたい水準（現行の条件など）を重複させるのが一般的です</li>
 <li>交互作用に関わる因子は、擬水準にはできません（このツールでは割り付けません）</li>
 </ul>
-<h2>1 つの実験で取るデータ</h2>
+<h2>1つの実験で取るデータ</h2>
 <ul>
-<li><strong>繰り返し</strong>：同じ条件で繰り返して測ります。平均の分散分析は全データで行い、誤差を「空き列などの誤差 e₁」と「繰り返しの誤差 e₂」に分けて表示します（検定には合わせた誤差を使います）。実験順序表では、全測定をランダムな順番に並べます</li>
-<li><strong>誤差因子の調合</strong>：使用環境・材料・劣化など、制御できない（しにくい）ばらつきの原因を<strong>誤差因子</strong>といいます。誤差因子を特性値が小さくなる側（N1）と大きくなる側（N2）などにまとめ（<strong>調合</strong>）、同じ実験 No. で全条件を測ります。平均やSN比は、実験 No. ごとの値で分析します</li>
+<li><strong>繰り返し</strong>：同じ条件で繰り返して測ります。平均の分散分析は全データで行い、誤差を「空き列などの誤差e₁」と「繰り返しの誤差e₂」に分けて表示します（検定には合わせた誤差を使います）。実験順序表では、全測定をランダムな順番に並べます</li>
+<li><strong>誤差因子の調合</strong>：使用環境・材料・劣化など、制御できない（しにくい）ばらつきの原因を<strong>誤差因子</strong>といいます。誤差因子を特性値が小さくなる側（N1）と大きくなる側（N2）などにまとめ（<strong>調合</strong>）、同じ実験No. で全条件を測ります。平均やSN比は、実験No. ごとの値で分析します</li>
 </ul>
 <p>どちらの場合も、空欄があると直交性が崩れるので解析しません。</p>
-<h2>特性値と SN比</h2>
+<h2>特性値とSN比</h2>
 <table>
 <thead>
 <tr>
 <th>特性の種類</th>
-<th>SN比 η（db）</th>
+<th>SN比η（db）</th>
 <th>例</th>
 </tr>
 </thead>
@@ -516,23 +516,23 @@ table.grid td.rn .lvs { color: var(--muted); font-size: .72rem; margin-left: 6px
 <tr>
 <td>望目特性タイプII</td>
 <td>−10 log₁₀(Ve)</td>
-<td>ずれ量・位置（0 をまたぐ値）</td>
+<td>ずれ量・位置（0をまたぐ値）</td>
 </tr>
 </tbody>
 </table>
 <ul>
-<li>n：1 つの実験のデータ数、Sm = (Σy)²/n（平均の変動）、Ve = (Σy² − Sm)/(n − 1)（誤差分散）</li>
-<li>SN比は大きいほど良い指標です。1 つの実験のデータから計算し、それを実験ごとの「特性値」として分散分析します</li>
-<li><strong>感度</strong>：望目特性タイプIでは S = 10 log₁₀[(Sm − Ve)/n]（平均の 2 乗を db で表したもの）、タイプIIでは平均を使います</li>
+<li>n：1つの実験のデータ数、Sm = (Σy)²/n（平均の変動）、Ve = (Σy² − Sm)/(n − 1)（誤差分散）</li>
+<li>SN比は大きいほど良い指標です。1つの実験のデータから計算し、それを実験ごとの「特性値」として分散分析します</li>
+<li><strong>感度</strong>：望目特性タイプIではS = 10 log₁₀[(Sm − Ve)/n]（平均の2乗をdbで表したもの）、タイプIIでは平均を使います</li>
 </ul>
-<p>計算できないとき：望目特性で Ve = 0（データがすべて同じ）、タイプIで Sm ≦ Ve、望大特性で 0 以下の値があるとき。画面に表示して止めます。</p>
-<h3>2 段階設計（望目特性）</h3>
+<p>計算できないとき：望目特性でVe = 0（データがすべて同じ）、タイプIでSm ≦ Ve、望大特性で0以下の値があるとき。画面に表示して止めます。</p>
+<h3>2段階設計（望目特性）</h3>
 <ol>
 <li><strong>SN比を最大にする</strong>：SN比に効く因子の、SN比が大きい水準を選び、ばらつきを小さくする</li>
 <li><strong>目標値に合わせる</strong>：SN比に効かず、感度（平均）だけに効く<strong>調整因子</strong>で、平均を目標値に合わせる</li>
 </ol>
-<p>ばらつきを小さくしてから平均を動かす順番にすることで、平均を合わせるときにばらつきを悪くしません。望小・望大特性の SN比は平均の良し悪しも含むので、2 段階設計の表は表示しません。</p>
-<p>望小・望大特性の SN比は、平均とばらつきを 1 つの値にまとめるため、どちらが良くなったのか分からないという批判があります（Box らの指摘）。このツールは SN比と並べて、平均と標準偏差の分散分析も表示します。</p>
+<p>ばらつきを小さくしてから平均を動かす順番にすることで、平均を合わせるときにばらつきを悪くしません。望小・望大特性のSN比は平均の良し悪しも含むので、2段階設計の表は表示しません。</p>
+<p>望小・望大特性のSN比は、平均とばらつきを1つの値にまとめるため、どちらが良くなったのか分からないという批判があります（Boxらの指摘）。このツールはSN比と並べて、平均と標準偏差の分散分析も表示します。</p>
 <h2>分散分析</h2>
 <table>
 <thead>
@@ -543,33 +543,33 @@ table.grid td.rn .lvs { color: var(--muted); font-size: .72rem; margin-left: 6px
 </thead>
 <tbody>
 <tr>
-<td>平方和 S</td>
-<td>因子の水準ごとの合計 T と個数 n から Σ T²/n − CT（CT = 総合計² ÷ 全個数）。交互作用は、2 因子の水準の組（セル）の平方和から両方の主効果を引いた値</td>
+<td>平方和S</td>
+<td>因子の水準ごとの合計Tと個数nからΣ T²/n − CT（CT = 総合計² ÷ 全個数）。交互作用は、2因子の水準の組（セル）の平方和から両方の主効果を引いた値</td>
 </tr>
 <tr>
-<td>自由度 φ</td>
-<td>主効果は水準数 − 1（擬水準は 1）、交互作用は積</td>
+<td>自由度φ</td>
+<td>主効果は水準数 − 1（擬水準は1）、交互作用は積</td>
 </tr>
 <tr>
-<td>分散 V</td>
+<td>分散V</td>
 <td>S ÷ φ</td>
 </tr>
 <tr>
 <td>F</td>
-<td>V ÷ 誤差分散 Ve（プール後）</td>
+<td>V ÷ 誤差分散Ve（プール後）</td>
 </tr>
 <tr>
-<td>寄与率 ρ</td>
-<td>純変動 (S − φ·Ve) ÷ 合計の平方和。誤差の寄与率は 100% から因子の寄与率を引いた値</td>
+<td>寄与率ρ</td>
+<td>純変動 (S − φ·Ve) ÷ 合計の平方和。誤差の寄与率は100%から因子の寄与率を引いた値</td>
 </tr>
 </tbody>
 </table>
 <h3>プール</h3>
-<p>効果の小さい項を誤差に含める（<strong>プール</strong>する）と、誤差の自由度が増えて検定と推定の精度が上がります。直交表に因子を詰めて割り付けると誤差の自由度が 0〜数個しかないことが多く、プールは必須です。</p>
+<p>効果の小さい項を誤差に含める（<strong>プール</strong>する）と、誤差の自由度が増えて検定と推定の精度が上がります。直交表に因子を詰めて割り付けると誤差の自由度が0〜数個しかないことが多く、プールは必須です。</p>
 <p>このツールは次の手順で候補を示します。最終的な判断はチェックで変えられます（変えると「手動」になり、「候補に戻す」で戻せます）。</p>
 <ol>
-<li>誤差の自由度が 0 なら、分散 V の小さい半分の項をプールする</li>
-<li>残った項のうち、F &lt; 2 で最も V が小さい項をプールし、誤差分散を計算し直す。F &lt; 2 の項がなくなるまで繰り返す</li>
+<li>誤差の自由度が0なら、分散Vの小さい半分の項をプールする</li>
+<li>残った項のうち、F &lt; 2で最もVが小さい項をプールし、誤差分散を計算し直す。F &lt; 2の項がなくなるまで繰り返す</li>
 <li>交互作用を残すなら、その主効果は残す（階層の原則）</li>
 </ol>
 <p>プールは「効果がない」と証明するものではありません。技術的に効くはずの因子がプールされたら、データや水準の幅を見直してください。</p>
@@ -577,15 +577,15 @@ table.grid td.rn .lvs { color: var(--muted); font-size: .72rem; margin-left: 6px
 <p>最適条件・現行条件での推定値は、プールしていない項だけで当てはめた最小二乗モデルで計算します（交互作用を残すと、その主効果も含めます）。直交表では、全体の平均に各因子の水準の効果（水準の平均 − 全体の平均）を足した値と同じです。</p>
 <ul>
 <li><strong>信頼区間</strong>：推定値 ± t(φe, α/2) × √(Ve ÷ n_e)</li>
-<li><strong>有効反復数 n_e</strong>：推定値の分散が Ve ÷ n_e になる数。直交表では伊奈の式（全データ数 ÷ (1 + 推定に使った項の自由度の和)）・田口の式と同じ値です</li>
-<li><strong>予測区間</strong>（確認実験の値が入る範囲）：推定値 ± t × √(Ve × (1/n_e + 1/m))。m は確認実験で平均するデータ数（全データで分析した平均なら 1 実験のデータ数、それ以外は 1）</li>
-<li><strong>利得</strong>：最適条件と現行条件の推定値の差。SN比の利得が 6 db なら、ばらつき（標準偏差）は約 1/2 になります（10^(−6/20) ≒ 0.50）</li>
+<li><strong>有効反復数n_e</strong>：推定値の分散がVe ÷ n_eになる数。直交表では伊奈の式（全データ数 ÷ (1 + 推定に使った項の自由度の和)）・田口の式と同じ値です</li>
+<li><strong>予測区間</strong>（確認実験の値が入る範囲）：推定値 ± t × √(Ve × (1/n_e + 1/m))。mは確認実験で平均するデータ数（全データで分析した平均なら1実験のデータ数、それ以外は1）</li>
+<li><strong>利得</strong>：最適条件と現行条件の推定値の差。SN比の利得が6 dbなら、ばらつき（標準偏差）は約1/2になります（10^(−6/20) ≒ 0.50）</li>
 </ul>
 <p>最適条件の初期値は、SN比（SN比がなければ平均）の推定値が最も良くなる組み合わせです。推定に使う因子の水準をすべての組み合わせで比べるので、交互作用を残したときもその組み合わせで選びます。</p>
 <h2>確認実験</h2>
 <p>推定は「各因子の効果が足し算で表せる（<strong>加法性</strong>）」という前提に立っています。割り付けていない交互作用があると、この前提が崩れ、推定が外れます。そこで、最適条件と現行条件で実際に実験し、次を確かめます。</p>
 <ul>
-<li>確認実験の利得 ÷ 推定の利得（<strong>再現率</strong>）が許容幅に入るか。許容幅の既定値は ±30% です。文献によって基準が異なり、統一された値はありません</li>
+<li>確認実験の利得 ÷ 推定の利得（<strong>再現率</strong>）が許容幅に入るか。許容幅の既定値は ±30%です。文献によって基準が異なり、統一された値はありません</li>
 <li>最適条件の確認実験の値が、予測区間に入るか</li>
 </ul>
 <p>再現しないときは、交互作用の存在、誤差因子の選び方、特性値の選び方（加法性のある特性値か）を見直します。</p>
@@ -593,8 +593,8 @@ table.grid td.rn .lvs { color: var(--muted); font-size: .72rem; margin-left: 6px
 <ul>
 <li>水準の幅は、効果が現れる程度に広く、しかし製品・設備が成り立つ範囲で決めます。狭すぎると効果が誤差に埋もれます</li>
 <li>実験は実験順序表のランダムな順番で行ってください。同じ条件を続けて行うと、時間とともに変わる要因が因子の効果に混ざります</li>
-<li>標準偏差の推定値（足し算の推定）は 0 以下になることがあります。ばらつきの評価には SN比を使ってください</li>
-<li>多水準作成法（2 水準の列を組み合わせて 4 水準を作る方法）、動特性、外側直交表の割り付けには対応していません</li>
+<li>標準偏差の推定値（足し算の推定）は0以下になることがあります。ばらつきの評価にはSN比を使ってください</li>
+<li>多水準作成法（2水準の列を組み合わせて4水準を作る方法）、動特性、外側直交表の割り付けには対応していません</li>
 <li>計算結果は判断材料としてお使いください</li>
 </ul>
 <!--EXPLAIN-END-->

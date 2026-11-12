@@ -39,20 +39,20 @@
   const parse = list => list.map(s => [...s].map(ch => +ch - 1));
 
   const ARRAY_DEFS = {
-    L4: { rows: () => twoLevel(2), note: '2 水準 3 列' },
-    L8: { rows: () => twoLevel(3), note: '2 水準 7 列' },
-    L9: { rows: l9, note: '3 水準 4 列' },
-    L12: { rows: () => parse(L12), note: '2 水準 11 列。交互作用は割り付けられない', partial: true },
-    L16: { rows: () => twoLevel(4), note: '2 水準 15 列' },
+    L4: { rows: () => twoLevel(2), note: '2水準3列' },
+    L8: { rows: () => twoLevel(3), note: '2水準7列' },
+    L9: { rows: l9, note: '3水準4列' },
+    L12: { rows: () => parse(L12), note: '2水準11列。交互作用は割り付けられない', partial: true },
+    L16: { rows: () => twoLevel(4), note: '2水準15列' },
     // 列1 と列2 の交互作用（自由度 2）はほかのどの列とも直交していて、列を使わずに求められる
-    L18: { rows: () => parse(L18), note: '2 水準 1 列 ＋ 3 水準 7 列。交互作用は列1×列2 だけ', partial: true, hidden: [[0, 1]] },
+    L18: { rows: () => parse(L18), note: '2水準1列 ＋ 3水準7列。交互作用は列1×列2だけ', partial: true, hidden: [[0, 1]] },
   };
   const ARRAY_NAMES = Object.keys(ARRAY_DEFS);
   const cache = {};
   function getArray(name) {
     if (cache[name]) return cache[name];
     const d = ARRAY_DEFS[name];
-    if (!d) throw new Error(`直交表 ${name} はありません`);
+    if (!d) throw new Error(`直交表${name}はありません`);
     const rows = d.rows(), nc = rows[0].length;
     const levels = [];
     for (let c = 0; c < nc; c++) levels.push(Math.max(...rows.map(r => r[c])) + 1);
@@ -113,13 +113,13 @@
     const F = design.factors, I = design.inter || [];
     const errors = [], warnings = [];
     F.forEach((f, i) => {
-      if (f.nlev !== 2 && f.nlev !== 3) errors.push(`因子「${f.name}」の水準数は 2 か 3 にしてください`);
-      if (f.nlev === 3 && !a.levels.includes(3)) errors.push(`因子「${f.name}」は 3 水準ですが、${a.name} は 2 水準の表です（多水準作成法は未対応です）`);
-      if (f.col != null && (f.col < 0 || f.col >= a.nc)) errors.push(`因子「${f.name}」の列番号は 1〜${a.nc} にしてください`);
-      else if (f.col != null && !canPlace(a, f, f.col)) errors.push(`因子「${f.name}」（${f.nlev} 水準）は列${f.col + 1}（${a.levels[f.col]} 水準）に割り付けられません`);
+      if (f.nlev !== 2 && f.nlev !== 3) errors.push(`因子「${f.name}」の水準数は2か3にしてください`);
+      if (f.nlev === 3 && !a.levels.includes(3)) errors.push(`因子「${f.name}」は3水準ですが、${a.name}は2水準の表です（多水準作成法は未対応です）`);
+      if (f.col != null && (f.col < 0 || f.col >= a.nc)) errors.push(`因子「${f.name}」の列番号は1〜${a.nc}にしてください`);
+      else if (f.col != null && !canPlace(a, f, f.col)) errors.push(`因子「${f.name}」（${f.nlev}水準）は列${f.col + 1}（${a.levels[f.col]}水準）に割り付けられません`);
     });
     const fixed = F.map(f => f.col).filter(c => c != null);
-    if (new Set(fixed).size !== fixed.length) errors.push('同じ列に 2 つの因子を割り付けています');
+    if (new Set(fixed).size !== fixed.length) errors.push('同じ列に2つの因子を割り付けています');
     const seenI = new Set();
     I.forEach(([p, q]) => {
       const key = Math.min(p, q) + '-' + Math.max(p, q);
@@ -127,15 +127,15 @@
       seenI.add(key);
       if (!F[p] || !F[q]) errors.push('交互作用の因子が見つかりません');
     });
-    if (I.length && a.name === 'L12') errors.push('L12 では交互作用を割り付けられません（2 因子の交互作用がほかの列に部分的に分散するため）');
+    if (I.length && a.name === 'L12') errors.push('L12では交互作用を割り付けられません（2因子の交互作用がほかの列に部分的に分散するため）');
     if (I.length && a.name === 'L18') {
-      if (I.length > 1) errors.push('L18 で割り付けられる交互作用は 1 つ（列1 × 列2）だけです');
+      if (I.length > 1) errors.push('L18で割り付けられる交互作用は1つ（列1 × 列2）だけです');
       for (const [p, q] of I) {
         const lv = [F[p].nlev, F[q].nlev].sort();
-        if (lv[0] !== 2 || lv[1] !== 3) errors.push('L18 の交互作用は、2 水準の因子（列1）と 3 水準の因子（列2）の組だけです');
+        if (lv[0] !== 2 || lv[1] !== 3) errors.push('L18の交互作用は、2水準の因子（列1）と3水準の因子（列2）の組だけです');
       }
     }
-    if (F.length > a.nc) errors.push(`因子が ${a.nc} 個を超えています（${a.name} の列数は ${a.nc}）`);
+    if (F.length > a.nc) errors.push(`因子が${a.nc}個を超えています（${a.name}の列数は${a.nc}）`);
     if (errors.length) return { ok: false, errors, warnings, array: a };
 
     // 探索の順番：列を指定した因子 → 交互作用に関わる因子（多い順）→ 残り
@@ -189,7 +189,7 @@
     }
     dfs(0);
     if (!found) {
-      return { ok: false, errors: [steps > 200000 ? '割り付けの探索が打ち切られました。列を一部指定してください' : `${a.name} にこの因子と交互作用の組み合わせは割り付けられません。大きい直交表にするか、交互作用を減らしてください`], warnings, array: a };
+      return { ok: false, errors: [steps > 200000 ? '割り付けの探索が打ち切られました。列を一部指定してください' : `${a.name}にこの因子と交互作用の組み合わせは割り付けられません。大きい直交表にするか、交互作用を減らしてください`], warnings, array: a };
     }
     const inter = I.map(([p, q]) => ({ a: p, b: q, ...interCols(a, found[p], found[q]) }));
     const pseudo = F.map((f, i) => a.levels[found[i]] !== f.nlev);
@@ -209,7 +209,7 @@
       table.push(row);
     }
     if (table.some(r => r.use !== 'empty' && r.alias.length)) warnings.push('割り付けた列に、割り付けていない交互作用が現れる（交絡する）列があります。その交互作用がないと考えてよいか確認してください');
-    if (a.partial) warnings.push(`${a.name} では、割り付けていない 2 因子の交互作用がほかの列に部分的に分散します。確認実験で利得が再現するかを確かめてください`);
+    if (a.partial) warnings.push(`${a.name}では、割り付けていない2因子の交互作用がほかの列に部分的に分散します。確認実験で利得が再現するかを確かめてください`);
     return { ok: true, errors, warnings, array: a, cols: found, pseudo, inter, table };
   }
 
@@ -238,11 +238,11 @@
     const Ve = n > 1 ? ss / (n - 1) : NaN;
     const Sm = sum * sum / n;
     if (metric === 'mean') return { v: mean };
-    if (metric === 'sd') return n < 2 ? { err: 'データが 1 個では標準偏差を計算できません' } : { v: Math.sqrt(Ve) };
+    if (metric === 'sd') return n < 2 ? { err: 'データが1個では標準偏差を計算できません' } : { v: Math.sqrt(Ve) };
     if (metric === 'sens') {
       if (char === 'nominal1') {
-        if (n < 2) return { err: '望目特性はデータが 2 個以上必要です' };
-        if (!(Sm - Ve > 0)) return { err: 'Sm ≦ Ve のため感度を計算できません' };
+        if (n < 2) return { err: '望目特性はデータが2個以上必要です' };
+        if (!(Sm - Ve > 0)) return { err: 'Sm ≦ Veのため感度を計算できません' };
         return { v: 10 * log10((Sm - Ve) / n) };
       }
       return { v: mean };
@@ -250,16 +250,16 @@
     // SN比（db）
     if (char === 'smaller') {
       const q = y.reduce((s, v) => s + v * v, 0) / n;
-      return q > 0 ? { v: -10 * log10(q) } : { err: 'すべて 0 のため望小特性の SN比を計算できません' };
+      return q > 0 ? { v: -10 * log10(q) } : { err: 'すべて0のため望小特性のSN比を計算できません' };
     }
     if (char === 'larger') {
-      if (y.some(v => v <= 0)) return { err: '望大特性の SN比は正の値でないと計算できません' };
+      if (y.some(v => v <= 0)) return { err: '望大特性のSN比は正の値でないと計算できません' };
       return { v: -10 * log10(y.reduce((s, v) => s + 1 / (v * v), 0) / n) };
     }
-    if (n < 2) return { err: '望目特性はデータが 2 個以上必要です' };
-    if (!(Ve > 0)) return { err: 'データがすべて同じ値（Ve = 0）のため SN比を計算できません' };
+    if (n < 2) return { err: '望目特性はデータが2個以上必要です' };
+    if (!(Ve > 0)) return { err: 'データがすべて同じ値（Ve = 0）のためSN比を計算できません' };
     if (char === 'nominal1') {
-      if (!(Sm - Ve > 0)) return { err: 'Sm ≦ Ve のため SN比を計算できません（平均が 0 に近い・負の値を含む特性はタイプII を使ってください）' };
+      if (!(Sm - Ve > 0)) return { err: 'Sm ≦ VeのためSN比を計算できません（平均が0に近い・負の値を含む特性はタイプIIを使ってください）' };
       return { v: 10 * log10(((Sm - Ve) / n) / Ve) };
     }
     return { v: -10 * log10(Ve) }; // nominal2
@@ -328,7 +328,7 @@
     if (!Array.isArray(data) || data.length !== N) return { errors: [`データの行数が実験数（${N}）と合いません`] };
     const k = data[0].length;
     for (let r = 0; r < N; r++) {
-      if (data[r].length !== k || data[r].some(v => !Number.isFinite(v))) { errors.push(`実験 No.${r + 1} に空欄か数値でない値があります（欠測があると直交性が崩れるため、すべて埋めてください）`); }
+      if (data[r].length !== k || data[r].some(v => !Number.isFinite(v))) { errors.push(`実験No.${r + 1}に空欄か数値でない値があります（欠測があると直交性が崩れるため、すべて埋めてください）`); }
     }
     if (errors.length) return { errors };
     const lev = runLevels(design, asg);
@@ -340,12 +340,12 @@
     } else {
       for (let r = 0; r < N; r++) {
         const m = metricOf(data[r], metric, char);
-        if (m.err) errors.push(`実験 No.${r + 1}：${m.err}`);
+        if (m.err) errors.push(`実験No.${r + 1}：${m.err}`);
         units.push(m.v); unitRow.push(r);
       }
       if (errors.length) return { errors };
     }
-    if (char === 'nominal1' && metric !== 'mean' && data.some(row => row.some(v => v <= 0))) warnings.push('0 以下の値があります。望目特性タイプI は正の値で、ばらつきが平均に比例する特性を想定しています');
+    if (char === 'nominal1' && metric !== 'mean' && data.some(row => row.some(v => v <= 0))) warnings.push('0以下の値があります。望目特性タイプIは正の値で、ばらつきが平均に比例する特性を想定しています');
     const n = units.length, mean = units.reduce((s, v) => s + v, 0) / n;
     const ST = units.reduce((s, v) => s + (v - mean) ** 2, 0), dfT = n - 1;
     const terms = termsOf(design, asg);
@@ -382,9 +382,9 @@
       t.rho = !t.pooled && ST > 0 && Number.isFinite(Vp) ? (t.S - t.df * Vp) / ST : NaN;
     }
     const rhoE = ST > 0 && Number.isFinite(Vp) ? (Sp + terms.filter(t => !t.pooled).reduce((s, t) => s + t.df, 0) * Vp) / ST : NaN;
-    for (const t of terms) if (t.type === 'inter' && !t.pooled && (pool.has('f' + t.a) || pool.has('f' + t.b))) warnings.push(`交互作用 ${t.label} を残したまま、その主効果をプールしています。推定には主効果も含めます`);
-    if (dfp === 0) warnings.push('誤差の自由度が 0 です。効果の小さい項をプールしないと検定と区間推定ができません');
-    else if (dfp < 3) warnings.push(`誤差の自由度が ${dfp} と小さいため、検定の検出力と区間推定の精度が低くなります`);
+    for (const t of terms) if (t.type === 'inter' && !t.pooled && (pool.has('f' + t.a) || pool.has('f' + t.b))) warnings.push(`交互作用${t.label}を残したまま、その主効果をプールしています。推定には主効果も含めます`);
+    if (dfp === 0) warnings.push('誤差の自由度が0です。効果の小さい項をプールしないと検定と区間推定ができません');
+    else if (dfp < 3) warnings.push(`誤差の自由度が${dfp}と小さいため、検定の検出力と区間推定の精度が低くなります`);
 
     // 水準ごとの平均（要因効果図）と、交互作用のセルの平均
     const levelMeans = F.map((f, i) => {
@@ -405,7 +405,7 @@
       if (dfp >= 3 && Vp > 0) {
         const lim = 3 * Math.sqrt(Vp), out = [];
         units.forEach((v, u) => { if (Math.abs(v - res.model.fitted[u]) > lim) out.push(unitRow[u]); });
-        if (out.length) warnings.push(`外れ値の可能性：実験 No.${[...new Set(out)].map(r => r + 1).join('・')}（残差が誤差の標準偏差の 3 倍を超えています）。記録・測定の誤りがないか確認してください`);
+        if (out.length) warnings.push(`外れ値の可能性：実験No.${[...new Set(out)].map(r => r + 1).join('・')}（残差が誤差の標準偏差の3倍を超えています）。記録・測定の誤りがないか確認してください`);
       }
     } catch (e) { res.model = null; }
     return res;
